@@ -1,4 +1,4 @@
-package ch2;
+package ch3;
 
 import java.nio.*;
 
@@ -8,12 +8,12 @@ import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 
-public class A02_E02_GLEventListener implements GLEventListener {
+public class S03_GLEventListener implements GLEventListener {
 
     private static final boolean DISPLAY_SHADERS = false;
 
     /* The constructor is not used to initialise anything */
-    public A02_E02_GLEventListener() {
+    public S03_GLEventListener() {
     }
 
     // ***************************************************
@@ -27,9 +27,10 @@ public class A02_E02_GLEventListener implements GLEventListener {
         System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClearDepth(1.0f);
-        gl.glEnable(GL3.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL3.GL_LESS);
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL.GL_LESS);
         initialise(gl);
+        startTime = getSeconds();
     }
 
     /* Called to indicate the drawing surface has been moved and/or resized  */
@@ -39,7 +40,6 @@ public class A02_E02_GLEventListener implements GLEventListener {
     }
 
     /* Draw */
-
     public void display(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
         render(gl);
@@ -49,6 +49,18 @@ public class A02_E02_GLEventListener implements GLEventListener {
     public void dispose(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
         gl.glDeleteBuffers(1, vertexBufferId, 0);
+        gl.glDeleteVertexArrays(1, vertexArrayId, 0);
+        gl.glDeleteBuffers(1, elementBufferId, 0);
+    }
+
+    // ***************************************************
+    /* TIME
+     */
+
+    private double startTime;
+
+    private double getSeconds() {
+        return System.currentTimeMillis() / 1000.0;
     }
 
     // ***************************************************
@@ -63,11 +75,35 @@ public class A02_E02_GLEventListener implements GLEventListener {
         fillBuffers(gl);
     }
 
+    /**
+     * ch 3.13 Exercise
+     * oscillate given time, frequency and amplitude
+     * @param elapsedTime time parameter
+     * @param f frequency
+     * @param a amplitude (keep below 1 for color)
+     * @return
+     */
+    public float oscillate(double elapsedTime, double f, double a) {
+        return (float) (a*Math.sin(2*Math.PI*f*elapsedTime));
+    }
+
     public void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+        //ch 3.13 Exercise
+        double elapsedTime = getSeconds() - startTime;
+
         gl.glUseProgram(shaderProgram);
+
+        //ch 3.13 Exercise
+        float redValue =  oscillate(elapsedTime, 0.1,1);
+        float greenValue =  oscillate(elapsedTime, 0.1,1);
+        float blueValue =  oscillate(elapsedTime, 0.1,1);
+        int vertexColourLocation = gl.glGetUniformLocation(shaderProgram, "uniformRGB");
+        gl.glUniform3f(vertexColourLocation, redValue, greenValue, blueValue);
+
         gl.glBindVertexArray(vertexArrayId[0]);
-        gl.glDrawArrays(GL.GL_TRIANGLES, 0, vertices.length); // drawing one triangle
+        gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
         gl.glBindVertexArray(0);
     }
 
@@ -75,15 +111,18 @@ public class A02_E02_GLEventListener implements GLEventListener {
     /* THE DATA
      */
 
-    // one triangle
     private float[] vertices = {
-            -0.5f, -0.5f, 0.0f,  // Bottom Left
-            0.5f, -0.5f, 0.0f,  // Bottom Right
-            0.0f, 0.5f, 0.0f,  // Top middle
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // Bottom Left, blue (r=0, g=0, b=1)
+            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // Bottom Right, green
+            0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f  // Top middle, red
+    };
 
-            0.7f, 0.7f, 0.0f, //ch 2.2 Exercise 2, draw two triangles
-            0.7f, 0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f
+    private int vertexStride = 6;
+    private int vertexXYZFloats = 3;
+    private int vertexColourFloats = 3;
+
+    private int[] indices = {         // Note that we start from 0
+            0, 1, 2
     };
 
     // ***************************************************
@@ -92,68 +131,71 @@ public class A02_E02_GLEventListener implements GLEventListener {
 
     private int[] vertexBufferId = new int[1];
     private int[] vertexArrayId = new int[1];
+    private int[] elementBufferId = new int[1];
+    // We now use an element buffer
 
     private void fillBuffers(GL3 gl) {
         gl.glGenVertexArrays(1, vertexArrayId, 0);
-        // Create and bind a Vertex Array Object
         gl.glBindVertexArray(vertexArrayId[0]);
-
         gl.glGenBuffers(1, vertexBufferId, 0);
-        // Create and bind OpenGL vertex buffer object
         gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexBufferId[0]);
-
         FloatBuffer fb = Buffers.newDirectFloatBuffer(vertices);
-        // Fill Java FloatBuffer.
-        // Works only if orginal data stored in a 1D array.
-        // Otherwise need to transfer data using a loop, e.g.
-        // for (... loop over vertex data structure...) {
-        //   fb.put(...each of...vertex x, y, z data...);
-        // }
-        // fb.rewind();
 
         gl.glBufferData(GL.GL_ARRAY_BUFFER, Float.BYTES * vertices.length, fb, GL.GL_STATIC_DRAW);
-        // Pass Java FloatBuffer data to OpenGL object
 
-        // Tell OpenGL to pass the current vertex buffer object to parameter 0 in the shader
-        // parameter 1: the vertex attribute index (i.e. location) to configure - location 0 in the
-        //              vertex shader. The shader code below makes the location clear.
-        // parameter 2: size of the attribute, in this case 3 values (i.e. an x,y,z value)
-        // parameter 3: type of data, in this case float
-        // parameter 4: false - do not normalize the data
-        // parameter 5: stride - the space between consecutive vertex attributes in a list of vertices.
-        //              In this case it is 3*Float.BYTEs, since there are 3 floats to stride over.
-        // parameter 6: offset of data in the buffer. The position data is at the start of the array, so
-        //              the value is 0.
-        gl.glVertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * Float.BYTES, 0);
-        gl.glEnableVertexAttribArray(0); // enable the vertex attribute using its location value
+        int stride = vertexStride;
+        int numXYZFloats = vertexXYZFloats;
+        int offset = 0;
+        gl.glVertexAttribPointer(0, numXYZFloats, GL.GL_FLOAT, false, stride * Float.BYTES, offset);
+        gl.glEnableVertexAttribArray(0);
 
-        gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
+        int numColorFloats = vertexColourFloats; // red, green and blue values for each colour
+        offset = numXYZFloats * Float.BYTES;  // the colour values are three floats after the three x,y,z values
+        // so change the offset value
+        gl.glVertexAttribPointer(1, numColorFloats, GL.GL_FLOAT, false, stride * Float.BYTES, offset);
+        // the vertex shader uses location 1 (sometimes called index 1)
+        // for the colour information
+        // location, size, type, normalize, stride, offset
+        // offset is relative to the start of the array of data
+        gl.glEnableVertexAttribArray(1);// Enable the vertex attribute array at location 1
+
+        gl.glGenBuffers(1, elementBufferId, 0);
+        IntBuffer ib = Buffers.newDirectIntBuffer(indices);
+        gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, elementBufferId[0]);
+        gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
         gl.glBindVertexArray(0);
     }
+
 
     // ***************************************************
     /* THE SHADER
      */
 
     private String vertexShaderSource =
-            "#version 330 core\n" +         // version 330 should work on most systems
-                    "\n" +                          // we choose position as the name
-                    // for tranferring (x,y,z) position data to the vertex shader
+            "#version 330 core\n" +
+                    "\n" +                       // we choose position as the variable name to transfer data into the vertex shader
                     "layout (location = 0) in vec3 position;\n" +
+                    // we choose color as the variable name to transfer data into the vertex shader
+                    "layout (location = 1) in vec3 color;\n" +
+                    "out vec3 aColor;\n" +       // we choose aColor to output information from the vertex shader
                     "\n" +
-                    "void main(){\n" +              // gl_Position is the defualt name the GPU pipeline expects
-                    "  gl_Position = vec4(position.x, position.y, position.z, 1.0f);\n" +
+                    "void main() {\n" +
+                    "  gl_Position = vec4(position, 1.0);\n" +
+                    "  aColor = color;\n" +
                     "}";
 
     private String fragmentShaderSource =
-            "#version 330 core\n" +         // version 330 should work on most systems
+            "#version 330 core\n" +
+                    "in vec3 aColor;\n" +       // this varaible name must match the name used as output in the vertex shader
+                    "out vec4 fragColor;\n" +
                     "\n" +
-                    "out vec4 fragColor;\n" +       // we choose fragColor as our output name
-                    // for the colour produced from the fragment shader
-                    "\n" +
-                    "void main(){\n" +
-                    "  fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n" +
-                    //ch 2.2 Exercise 1 change the colour of the triangle " fragColor = vec4(0.1f, 0.7f, 0.9f, 1.0f);\n" +
+                    "uniform vec3 uniformRGB;\n" +//ch 3.13 Exercise
+                    "void main() {\n" +
+                    //"  fragColor = vec4(aColor, 1.0f);\n" +
+                    "  fragColor = vec4(aColor.x + uniformRGB.x," +//ch 3.13 Exercise
+                    "aColor.y + uniformRGB.y," +
+                    "aColor.z + uniformRGB.z," +
+                    "1.0f);\n" +
                     "}";
 
     private int shaderProgram;
@@ -164,16 +206,10 @@ public class A02_E02_GLEventListener implements GLEventListener {
             System.out.println(vertexShaderSource);
             System.out.println("\n***Fragment shader***");
             System.out.println(fragmentShaderSource);
-            // Display the shaders for diagnostic purposes.
-            // Check that the shader code looks correct.
-            // Will be more useful when the text is loaded from file.
         }
     }
 
     private int compileAndLink(GL3 gl) {
-        // Use JOGL classes to set up the shaders
-        // We can treat this code as boilerplate code,
-        // as it will remain the same in future programs.
         String[][] sources = new String[1][1];
         sources[0] = new String[]{vertexShaderSource};
         ShaderCode vertexShaderCode = new ShaderCode(GL3.GL_VERTEX_SHADER, sources.length, sources);
