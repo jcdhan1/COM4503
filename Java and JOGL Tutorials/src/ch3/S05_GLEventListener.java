@@ -84,6 +84,11 @@ public class S05_GLEventListener implements GLEventListener {
 
         shader.use(gl);
 
+		//ch 3.3 Exercise 2
+        float offset=1;
+		int offsetUniform = gl.glGetUniformLocation(shader.getID(), "offset");
+		gl.glUniform1f(offsetUniform, offset);
+
         gl.glBindVertexArray(vertexArrayId[0]);
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
         gl.glBindVertexArray(0);
