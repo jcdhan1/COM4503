@@ -78,6 +78,7 @@ public class T02_GLEventListener implements GLEventListener {
 	// Now for some textures
 	private int[] textureId1 = new int[1];
 	private int[] textureId2 = new int[1];
+	private int[] textureId3 = new int[1];//ch 4.2 Exercise 3
 
 	public void initialise(GL3 gl) {
 		//shader = new Shader(gl, "vs_T02.txt", "fs_T02.txt");
@@ -88,10 +89,11 @@ public class T02_GLEventListener implements GLEventListener {
 		fillBuffers(gl);
 		textureId1 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\wattBook.jpg");
 		textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\chequerboard.jpg");
+		textureId3 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\cloud.jpg");//ch 4.2 Exercise 3
 	}
 
 	/**
-	 * ch 3.13 Exercise
+	 * ch 4.2 Exercise 2
 	 * oscillate given time, frequency and amplitude
 	 * @param elapsedTime time parameter
 	 * @param f frequency
@@ -111,7 +113,6 @@ public class T02_GLEventListener implements GLEventListener {
 		int mixfLocation = gl.glGetUniformLocation(shader.getID(), "mixf");
 		float mixf = oscillate(elapsedTime, 1,1);
 		gl.glUniform1f(mixfLocation, mixf);
-		//TODO: Add a uniform variable that varies the amount of mix over time.
 
 		gl.glBindVertexArray(vertexArrayId[0]);
 		gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
@@ -121,14 +122,19 @@ public class T02_GLEventListener implements GLEventListener {
 		shader.use(gl);
 		shader.setInt(gl, "first_texture", 0);
 		shader.setInt(gl, "second_texture", 1);
+		shader.setInt(gl, "third_texture", 2);//ch 4.2 Exercise 3
 		// the following two lines are before the Shader.setInt() method was implemented
 		gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "first_texture"), 0);
 		gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "second_texture"), 1);
+		gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "third_texture"), 2);//ch 4.2 Exercise 3
 
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textureId1[0]);
 		gl.glActiveTexture(GL.GL_TEXTURE1);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textureId2[0]);
+		//ch 4.2 Exercise 3
+		gl.glActiveTexture(GL.GL_TEXTURE2);
+		gl.glBindTexture(GL.GL_TEXTURE_2D, textureId3[0]);
 
 		gl.glBindVertexArray(vertexArrayId[0]);
 		gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
