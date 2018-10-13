@@ -90,13 +90,27 @@ public class T02_GLEventListener implements GLEventListener {
 		textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\chequerboard.jpg");
 	}
 
+	/**
+	 * ch 3.13 Exercise
+	 * oscillate given time, frequency and amplitude
+	 * @param elapsedTime time parameter
+	 * @param f frequency
+	 * @param a amplitude (keep below 1 for color)
+	 * @return
+	 */
+	public float oscillate(double elapsedTime, double f, double a) {
+		return (float) (a*Math.sin(2*Math.PI*f*elapsedTime));
+	}
+
 	public void render(GL3 gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
 		//ch 4.2 Exercise 2
 		double elapsedTime = getSeconds() - startTime;
 
-		int vertexColourLocation = gl.glGetUniformLocation(shader.getID(), "uniformRGB");
+		int mixfLocation = gl.glGetUniformLocation(shader.getID(), "mixf");
+		float mixf = oscillate(elapsedTime, 1,1);
+		gl.glUniform1f(mixfLocation, mixf);
 		//TODO: Add a uniform variable that varies the amount of mix over time.
 
 		gl.glBindVertexArray(vertexArrayId[0]);
@@ -108,8 +122,8 @@ public class T02_GLEventListener implements GLEventListener {
 		shader.setInt(gl, "first_texture", 0);
 		shader.setInt(gl, "second_texture", 1);
 		// the following two lines are before the Shader.setInt() method was implemented
-		//gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "first_texture"), 0);
-		//gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "second_texture"), 1);
+		gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "first_texture"), 0);
+		gl.glUniform1i(gl.glGetUniformLocation(shader.getID(), "second_texture"), 1);
 
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textureId1[0]);
