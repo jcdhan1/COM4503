@@ -82,11 +82,11 @@ public class T04_GLEventListener implements GLEventListener {
 	public void initialise(GL3 gl) {
 		String user_dir = System.getProperty("user.dir");
 		System.out.println("Working Directory = " + user_dir);
-		shader = new Shader(gl, user_dir + "\\src\\ch4\\vs_T02.glsl", user_dir + "\\src\\ch4\\fs_T02.glsl");
+		shader = new Shader(gl, user_dir + "\\src\\ch4\\vs_T04.glsl", user_dir + "\\src\\ch4\\fs_T04.glsl");
 
 		fillBuffers(gl);
 		textureId1 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\wattBook.jpg");
-		textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\cloud.jpg");
+		textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch4\\rain.jpg"); //ch 4.3 Exercise 2: If you are feeling adventurous, find some different textures to use to produce a different dynamic texture effect.
 	}
 
 	public void render(GL3 gl) {
@@ -96,9 +96,9 @@ public class T04_GLEventListener implements GLEventListener {
 
 		shader.use(gl);
 
-		double t = elapsedTime * 0.1;  // *0.1 slows it down a bit
+		double t = elapsedTime * 0.1;
 		float offsetX = (float) (t - Math.floor(t));
-		float offsetY = 0.0f;
+		float offsetY = offsetX; //ch 4.3 Exercise 1: third Change the calculation of offset in method render() to see what dynamic effect you can create.
 		shader.setFloat(gl, "offset", offsetX, offsetY);
 
 		shader.setInt(gl, "first_texture", 0);
@@ -113,7 +113,6 @@ public class T04_GLEventListener implements GLEventListener {
 		gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
 		gl.glBindVertexArray(0);
 
-		// always good practice to set everything back to defaults once configured.
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
 
