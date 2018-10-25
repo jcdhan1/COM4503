@@ -120,10 +120,28 @@ public class V03_GLEventListener implements GLEventListener {
 		double elapsedTime = getSeconds() - startTime;
 		float angle = (float) (elapsedTime * 50);
 		Mat4 modelMatrix = new Mat4(1);
-		//modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundY(angle));
-		modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(i, 0, j));
-		//modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundX(angle));
+		/*ch 5.2.3
+		 	Exercise 1: When translation is before rotation, each copy of the cube has its position decided first so the
+			origin that it rotates around changes; it rotates around the point it moved to along the "grid".
+			When rotation is after translation, each copy of the cube is rotated first in the center, since its axes are rotated too,
+			the direction of its translation vector changes but he magnitude doesn't, this gives the effect of the
+			whole "grid" rotating.
+
+		 	Exercise 2: Rotation around the Y-axis occurs before translation, so the whole "grid" appears to rotate around
+		  	the Y-axis like in the previous exercise. Since rotation around the X-axis occurs after the other
+		  	transformations, each cube rotates around their own relative X-axis, because the other two transformations,
+		  	change them.
+
+		 	Exercise 3: Only cubes 0, 3, 6 and 9 rotate around their relative X-axis, the rest rotate around their
+		 	relative Z-axis.
+		*/
 		modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundY(angle));
+		modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(i, 0, j));
+		if (i%3==0) {
+			modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundX(angle));
+		} else {
+			modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundZ(angle));
+		}
 		return modelMatrix;
 	}
 

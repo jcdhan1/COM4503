@@ -114,21 +114,23 @@ public class V02_GLEventListener implements GLEventListener {
 	private Mat4 getModelMatrix() {
 		double elapsedTime = getSeconds() - startTime;
 		//float angle = -55;
-		//float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
+		//ch 5.2.2 Exercise 2: Oscillates between + and - 115 degrees around both respective axes
+		float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
+		//float angle = (float)(elapsedTime*100 % 360);
 		Mat4 modelMatrix = new Mat4(1);
-		//modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle), modelMatrix);
-		//modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(angle), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(angle), modelMatrix);
 		return modelMatrix;
 	}
 
 	private Mat4 getViewMatrix() {
 		double elapsedTime = getSeconds() - startTime;
-		//float xposition = 2;
+		float xposition = 2;
 		float yposition = 3;
 		float zposition = 4;
 
-		//ch 5.2.2 Exercise 1: Rotates camera around y-axis so that the camera is always looking at the world origin
-		float xposition = 3.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
+		//ch 5.2.2 Exercise 1: The next line rotates camera around y-axis so that the camera is always looking at the world origin
+		//float xposition = 3.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
 		//float zposition = 3.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
 		Mat4 viewMatrix = Mat4Transform.lookAt(new Vec3(xposition, yposition, zposition), new Vec3(0, 0, 0), new Vec3(0, 1, 0));
 		return viewMatrix;
