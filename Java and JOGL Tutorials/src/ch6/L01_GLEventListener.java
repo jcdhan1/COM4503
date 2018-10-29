@@ -153,6 +153,9 @@ public class L01_GLEventListener implements GLEventListener {
 		gl.glUniform1f(ambientStrengthUniform, oscillate(elapsedTime, 0.5,0.5) + 0.5f);
 		gl.glUniform1f(diffuseStrengthUniform, oscillate(elapsedTime, 0.25,0.5) + 0.5f);
 		gl.glUniform1f(specularStrengthUniform, oscillate(elapsedTime, 0.125,1) + 1.0f);
+		int blinnUniform = gl.glGetUniformLocation(shader.getID(), "blinn");
+		gl.glUniform1i(blinnUniform, 1);
+
 
 
 		gl.glBindVertexArray(vertexArrayId[0]);
