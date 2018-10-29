@@ -1,14 +1,14 @@
-package ch6;
+package ch6._1;
 
-import ch6.gmaths.*;
+import ch6._1.gmaths.Mat4;
+import ch6._1.gmaths.Mat4Transform;
+import ch6._1.gmaths.Vec3;
+import ch6._1.gmaths.*;
 
 import java.nio.*;
 
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.util.*;
-import com.jogamp.opengl.util.awt.*;
-import com.jogamp.opengl.util.glsl.*;
 
 public class L01_GLEventListener implements GLEventListener {
 
@@ -76,11 +76,11 @@ public class L01_GLEventListener implements GLEventListener {
     public void initialise(GL3 gl) {
         String user_dir = System.getProperty("user.dir");
         System.out.println("Working Directory = " + user_dir);
-        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01.glsl");
-        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_ambient.glsl");
-        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_diffuse.glsl");//ch 6.1.3
-        shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_specular.glsl");
-        shaderLight = new Shader(gl, user_dir + "\\src\\ch6\\vs_light_01.glsl", user_dir + "\\src\\ch6\\fs_light_01.glsl");
+        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\_1\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\_1\\fs_cube_01.glsl");
+        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\_1\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\_1\\fs_cube_01_ambient.glsl");
+        //shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\_1\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\_1\\fs_cube_01_diffuse.glsl");//ch 6.1.3
+        shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\_1\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\_1\\fs_cube_01_specular.glsl");
+        shaderLight = new Shader(gl, user_dir + "\\src\\ch6\\_1\\vs_light_01.glsl", user_dir + "\\src\\ch6\\_1\\fs_light_01.glsl");
         fillBuffers(gl);
         light_fillBuffers(gl);
     }

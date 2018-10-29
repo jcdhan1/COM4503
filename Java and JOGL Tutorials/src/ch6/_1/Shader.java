@@ -1,12 +1,10 @@
-package ch6;
+package ch6._1;
 
-import ch6.gmaths.*;
-
+import ch6._1.gmaths.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.Charset;
-
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.glsl.*;
 
@@ -23,7 +21,8 @@ public class Shader {
 		try {
 			vertexShaderSource = new String(Files.readAllBytes(Paths.get(vertexPath)), Charset.defaultCharset());
 			fragmentShaderSource = new String(Files.readAllBytes(Paths.get(fragmentPath)), Charset.defaultCharset());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 		if (DISPLAY_SHADERS) display();
@@ -82,12 +81,12 @@ public class Shader {
 
 	private int compileAndLink(GL3 gl) {
 		String[][] sources = new String[1][1];
-		sources[0] = new String[]{vertexShaderSource};
+		sources[0] = new String[]{ vertexShaderSource };
 		ShaderCode vertexShaderCode = new ShaderCode(GL3.GL_VERTEX_SHADER, sources.length, sources);
 		boolean compiled = vertexShaderCode.compile(gl, System.err);
 		if (!compiled)
 			System.err.println("[error] Unable to compile vertex shader: " + sources);
-		sources[0] = new String[]{fragmentShaderSource};
+		sources[0] = new String[]{ fragmentShaderSource };
 		ShaderCode fragmentShaderCode = new ShaderCode(GL3.GL_FRAGMENT_SHADER, sources.length, sources);
 		compiled = fragmentShaderCode.compile(gl, System.err);
 		if (!compiled)

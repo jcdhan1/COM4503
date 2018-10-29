@@ -1,4 +1,4 @@
-package ch6.gmaths;
+package ch6._1.gmaths;
 
 public final class Vec3 {
 	public float x;

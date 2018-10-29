@@ -1,4 +1,4 @@
-package ch6.gmaths;
+package ch6._1.gmaths;
 
 /**
  * A class for a 2D vector.

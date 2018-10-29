@@ -1,4 +1,4 @@
-package ch6.gmaths;
+package ch6._1.gmaths;
 
 /**
  * A static class for a set of methods to create transformation matrices.

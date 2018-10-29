@@ -1,4 +1,4 @@
-package ch6.gmaths;
+package ch6._1.gmaths;
 
 public class Mat4 {   // row column formulation
 

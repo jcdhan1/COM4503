@@ -1,26 +1,17 @@
-package ch6;
+package ch6._1;
 
-import ch6.gmaths.*;
-
-import java.awt.event.*;
-
-import com.jogamp.opengl.awt.GLCanvas;
+import ch6._1.gmaths.*;
 
 public class Camera {
 
-	public enum CameraType {X, Z}
-
-	;
-
-	public enum Movement {NO_MOVEMENT, LEFT, RIGHT, UP, DOWN, FORWARD, BACK}
-
-	;
+	public enum CameraType {X, Z};
+	public enum Movement {NO_MOVEMENT, LEFT, RIGHT, UP, DOWN, FORWARD, BACK};
 
 	private static final float DEFAULT_RADIUS = 25;
-	public static final Vec3 DEFAULT_POSITION = new Vec3(0, 0, 25);
-	public static final Vec3 DEFAULT_POSITION_2 = new Vec3(25, 0, 0);
-	public static final Vec3 DEFAULT_TARGET = new Vec3(0, 0, 0);
-	public static final Vec3 DEFAULT_UP = new Vec3(0, 1, 0);
+	public static final Vec3 DEFAULT_POSITION = new Vec3(0,0,25);
+	public static final Vec3 DEFAULT_POSITION_2 = new Vec3(25,0,0);
+	public static final Vec3 DEFAULT_TARGET = new Vec3(0,0,0);
+	public static final Vec3 DEFAULT_UP = new Vec3(0,1,0);
 
 	public final float YAW = -90f;
 	public final float PITCH = 0f;
@@ -69,18 +60,14 @@ public class Camera {
 
 	public void setCamera(CameraType c) {
 		switch (c) {
-			case X:
-				setupCamera(DEFAULT_POSITION, DEFAULT_TARGET, DEFAULT_UP);
-				break;
-			case Z:
-				setupCamera(DEFAULT_POSITION_2, DEFAULT_TARGET, DEFAULT_UP);
-				break;
+			case X : setupCamera(DEFAULT_POSITION, DEFAULT_TARGET, DEFAULT_UP) ; break;
+			case Z : setupCamera(DEFAULT_POSITION_2, DEFAULT_TARGET, DEFAULT_UP); break;
 		}
 	}
 
 	private void calculateYawPitch(Vec3 v) {
-		yaw = (float) Math.atan2(v.z, v.x);
-		pitch = (float) Math.asin(v.y);
+		yaw = (float)Math.atan2(v.z,v.x);
+		pitch = (float)Math.asin(v.y);
 	}
 
 	public Mat4 getViewMatrix() {
@@ -98,26 +85,13 @@ public class Camera {
 
 	public void keyboardInput(Movement movement) {
 		switch (movement) {
-			case NO_MOVEMENT:
-				break;
-			case LEFT:
-				position.add(Vec3.multiply(right, -KEYBOARD_SPEED));
-				break;
-			case RIGHT:
-				position.add(Vec3.multiply(right, KEYBOARD_SPEED));
-				break;
-			case UP:
-				position.add(Vec3.multiply(up, KEYBOARD_SPEED));
-				break;
-			case DOWN:
-				position.add(Vec3.multiply(up, -KEYBOARD_SPEED));
-				break;
-			case FORWARD:
-				position.add(Vec3.multiply(front, KEYBOARD_SPEED));
-				break;
-			case BACK:
-				position.add(Vec3.multiply(front, -KEYBOARD_SPEED));
-				break;
+			case NO_MOVEMENT: break;
+			case LEFT: position.add(Vec3.multiply(right, -KEYBOARD_SPEED)); break;
+			case RIGHT: position.add(Vec3.multiply(right, KEYBOARD_SPEED)); break;
+			case UP: position.add(Vec3.multiply(up, KEYBOARD_SPEED)); break;
+			case DOWN: position.add(Vec3.multiply(up, -KEYBOARD_SPEED)); break;
+			case FORWARD: position.add(Vec3.multiply(front, KEYBOARD_SPEED)); break;
+			case BACK: position.add(Vec3.multiply(front, -KEYBOARD_SPEED)); break;
 		}
 	}
 
@@ -136,11 +110,11 @@ public class Camera {
 		sy = Math.sin(yaw);
 		cp = Math.cos(pitch);
 		sp = Math.sin(pitch);
-		front.x = (float) (cy * cp);
-		front.y = (float) (sp);
-		front.z = (float) (sy * cp);
+		front.x = (float)(cy*cp);
+		front.y = (float)(sp);
+		front.z = (float)(sy*cp);
 		front.normalize();
-		target = Vec3.add(position, front);
+		target = Vec3.add(position,front);
 	}
 
 	private void updateCameraVectors() {
