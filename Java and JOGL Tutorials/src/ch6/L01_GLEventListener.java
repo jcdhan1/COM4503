@@ -113,6 +113,18 @@ public class L01_GLEventListener implements GLEventListener {
 		return modelMatrix;
 	}
 
+	/**
+	 *
+	 * oscillate given time, frequency and amplitude
+	 * @param elapsedTime time parameter
+	 * @param f frequency
+	 * @param a amplitude
+	 * @return
+	 */
+	public float oscillate(double elapsedTime, double f, double a) {
+		return (float) (a*Math.sin(2*Math.PI*f*elapsedTime));
+	}
+
 	private void renderCube(GL3 gl, Shader shader, Mat4 modelMatrix, Mat4 viewMatrix, Mat4 projectionMatrix) {
 		Mat4 mvpMatrix = Mat4.multiply(projectionMatrix, Mat4.multiply(viewMatrix, modelMatrix));
 
@@ -132,9 +144,12 @@ public class L01_GLEventListener implements GLEventListener {
 		shader.setVec3(gl, "viewPos", camera.getPosition());
 
 
+		double elapsedTime = getSeconds() - startTime;
+
 		//ch 6.1.3
+
 		int ambientStrengthUniform = gl.glGetUniformLocation(shader.getID(), "ambientStrength");
-		gl.glUniform1f(ambientStrengthUniform, 1);
+		gl.glUniform1f(ambientStrengthUniform, oscillate(elapsedTime, 0.5,0.5));
 
 
 		gl.glBindVertexArray(vertexArrayId[0]);
