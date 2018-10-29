@@ -78,8 +78,8 @@ public class L01_GLEventListener implements GLEventListener {
 		System.out.println("Working Directory = " + user_dir);
 		//shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01.glsl");
 		//shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_ambient.glsl");
-		shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_diffuse.glsl");//ch 6.1.3
-		//shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_specular.glsl");
+		//shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_diffuse.glsl");//ch 6.1.3
+		shaderCube = new Shader(gl, user_dir + "\\src\\ch6\\vs_cube_01.glsl", user_dir + "\\src\\ch6\\fs_cube_01_specular.glsl");
 		shaderLight = new Shader(gl, user_dir + "\\src\\ch6\\vs_light_01.glsl", user_dir + "\\src\\ch6\\fs_light_01.glsl");
 		fillBuffers(gl);
 		light_fillBuffers(gl);
@@ -146,10 +146,13 @@ public class L01_GLEventListener implements GLEventListener {
 
 		double elapsedTime = getSeconds() - startTime;
 
-		//ch 6.1.3
-
+		//ch 6.1.3, ch 6.1.4 exercise
 		int ambientStrengthUniform = gl.glGetUniformLocation(shader.getID(), "ambientStrength");
-		gl.glUniform1f(ambientStrengthUniform, oscillate(elapsedTime, 0.5,0.5));
+		int diffuseStrengthUniform = gl.glGetUniformLocation(shader.getID(), "diffuseStrength");
+		int specularStrengthUniform = gl.glGetUniformLocation(shader.getID(), "specularStrength");
+		gl.glUniform1f(ambientStrengthUniform, oscillate(elapsedTime, 0.5,0.5) + 0.5f);
+		gl.glUniform1f(diffuseStrengthUniform, oscillate(elapsedTime, 0.25,0.5) + 0.5f);
+		gl.glUniform1f(specularStrengthUniform, oscillate(elapsedTime, 0.125,1) + 1.0f);
 
 
 		gl.glBindVertexArray(vertexArrayId[0]);
