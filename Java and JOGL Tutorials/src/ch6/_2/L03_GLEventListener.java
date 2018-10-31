@@ -79,14 +79,18 @@ public class L03_GLEventListener implements GLEventListener {
 		light = new Light(gl);
 		light.setCamera(camera);
 
+		//Big cube
 		Mesh m = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
 		Shader shader = new Shader(gl, user_dir + "\\src\\ch6\\_2\\vs_tt_03.glsl", user_dir + "\\src\\ch6\\_2\\fs_tt_03.glsl");
-		Material material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
+		Material material = new Material(new Vec3(0.91f, 0.1f, 0.1f), new Vec3(0.91f, 0.1f, 0.1f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
 		tt1 = new Model(gl, camera, light, shader, material, new Mat4(1), m);
 
+		//Small cube
 		m = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch6\\_2\\vs_cube_03.glsl", user_dir + "\\src\\ch6\\_2\\fs_cube_03.glsl");
-		material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+		//ch 6.2 Exercise 1
+		//material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+		material = new Material(new Vec3(1f, 1f, 1f), new Vec3(0.5f, 0.5f, 0.5f), new Vec3(100f, 100f, 100f), 32.0f);
 		cube = new Model(gl, camera, light, shader, material, new Mat4(1), m);
 	}
 
