@@ -83,6 +83,7 @@ public class L05_GLEventListener implements GLEventListener {
 		int[] textureId1 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch6\\_3\\container2_specular.jpg");
 		int[] textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch6\\_3\\chequerboard.jpg");
 		int[] textureId3 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch6\\_3\\cloud.jpg");
+		int[] textureId4 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch6\\_3\\wattBook.jpg");//	ch 6.3 Exercise 2 texture on third wall
 
 		light = new Light(gl);
 		light.setCamera(camera);
@@ -100,10 +101,10 @@ public class L05_GLEventListener implements GLEventListener {
 		tt2 = new Model(gl, camera, light, shader, material, new Mat4(1), m, textureId3);
 
 		m = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-		shader = new Shader(gl, user_dir + "\\src\\ch6\\_3\\vs_tt_04.glsl", user_dir + "\\src\\ch6\\_3\\fs_tt_04.glsl");
+		shader = new Shader(gl, user_dir + "\\src\\ch6\\_3\\vs_tt_05.glsl", user_dir + "\\src\\ch6\\_3\\fs_tt_05.glsl");//ch 6.3 Exercise 2
 		material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
 		// no textures for this model
-		tt3 = new Model(gl, camera, light, shader, material, new Mat4(1), m);
+		tt3 = new Model(gl, camera, light, shader, material, new Mat4(1), m, textureId4);//ch 6.3 Exercise 2
 
 		m = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch6\\_3\\vs_cube_04.glsl", user_dir + "\\src\\ch6\\_3\\fs_cube_04.glsl");
@@ -165,7 +166,7 @@ public class L05_GLEventListener implements GLEventListener {
 	private Mat4 getModelMatrix(int i) {
 		double elapsedTime = getSeconds() - startTime;
 		Mat4 model = new Mat4(1);
-		float yAngle = (float) (elapsedTime * 100 * randoms[(i + 637) % NUM_RANDOMS]); //ch 6.3 Exercise 1
+		float yAngle = (float) (elapsedTime * 100 * randoms[(i + 637) % NUM_RANDOMS]); //ch 6.3 Exercise 1 faster rotation
 		float multiplier = 12.0f;
 		float x = multiplier * randoms[i % NUM_RANDOMS] - multiplier * 0.5f;
 		float y = 0.5f + (multiplier * 0.5f) + multiplier * randoms[(i + 137) % NUM_RANDOMS] - multiplier * 0.5f;
