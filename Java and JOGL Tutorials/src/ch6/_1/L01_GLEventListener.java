@@ -150,14 +150,14 @@ public class L01_GLEventListener implements GLEventListener {
 
         double elapsedTime = getSeconds() - startTime;
 
-        //ch 6.1.3, ch 6.1.4 exercise
+        //ch 6.1.3, ch 6.1.4 exercise 1
         int ambientStrengthUniform = gl.glGetUniformLocation(shader.getID(), "ambientStrength");
         int diffuseStrengthUniform = gl.glGetUniformLocation(shader.getID(), "diffuseStrength");
         int specularStrengthUniform = gl.glGetUniformLocation(shader.getID(), "specularStrength");
         gl.glUniform1f(ambientStrengthUniform, oscillate(elapsedTime, 0.5, 0.5) + 0.5f);
         gl.glUniform1f(diffuseStrengthUniform, oscillate(elapsedTime, 0.25, 0.5) + 0.5f);
         gl.glUniform1f(specularStrengthUniform, oscillate(elapsedTime, 0.125, 1) + 1.0f);
-        int blinnUniform = gl.glGetUniformLocation(shader.getID(), "blinn");
+        int blinnUniform = gl.glGetUniformLocation(shader.getID(), "blinn"); //ch 6.1.4 exercise 2
         gl.glUniform1i(blinnUniform, 0);
 
 

@@ -33,6 +33,7 @@ void main() {
   //float specularStrength = 0.5;
   vec3 viewDir = normalize(viewPos - aPos);
   float spec = 0.0;
+  //ch 6.1.4 exercise 2
   if(blinn) {
       vec3 halfwayDir = normalize(lightDir + viewDir);
       spec = pow(max(dot(norm, halfwayDir), 0.0), 16.0);
