@@ -132,7 +132,7 @@ public class M01_GLEventListener implements GLEventListener {
 
 		sphere = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId3, textureId4);
 
-		//ch 7.1 Exercise 1, change Cube to Sphere for Exercise 2
+		//ch 7.1 Exercise 1, change Sphere to Cube for Exercise 2
 		sphere2 = new Model(gl, camera, light, new Shader(gl,
 			user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
 			user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04.glsl"), material,
