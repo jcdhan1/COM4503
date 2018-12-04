@@ -98,13 +98,14 @@ public class M02_GLEventListener implements GLEventListener {
 		floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId0);
 
 		//***CUBE***
+		Vec3 transVec = new Vec3(0,0.5f,0);//ch 7.2 Exercise 1
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch7\\_2_scene_graph\\vs_cube_04.glsl",
 				user_dir + "\\src\\ch7\\_2_scene_graph\\fs_cube_04.glsl");
 		material = new Material(new Vec3(1.0f, 0.5f, 0.31f),
 				new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
 		modelMatrix = Mat4.multiply(Mat4Transform.scale(4, 4, 4),
-				Mat4Transform.translate(0, 0.5f, 0));
+				Mat4Transform.translate(transVec));
 		/* Only one cube is needed. The same cube can be used to draw each part of the two-branch structure,
 			but with different model transformations used in each case, as we shall see.
 			Note: the modelMatrix set up when initialising the cube is not used when drawing an object as part of a
@@ -114,15 +115,16 @@ public class M02_GLEventListener implements GLEventListener {
 
 		twoBranchRoot = new NameNode("two-branch structure");
 		NameNode lowerBranch = new NameNode("lower branch");
-		Mat4 m = Mat4Transform.scale(2, 4, 2);
-		m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
+		Vec3 scaleFactor = new Vec3(2,4,2);//ch 7.2 Exercise 1
+		Mat4 m = Mat4Transform.scale(scaleFactor);
+		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
 		TransformNode lowerBranchTransform = new TransformNode("scale(2,4,2); translate(0,0.5,0)", m);
 		ModelNode lowerBranchShape = new ModelNode("Cube(0)", cube);
 		TransformNode translateToTop = new TransformNode("translate(0,4,0)",
 				Mat4Transform.translate(0, 4, 0));
 		NameNode upperBranch = new NameNode("upper branch");
 		m = Mat4Transform.scale(1.4f, 3.9f, 1.4f);
-		m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
+		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
 		TransformNode upperBranchTransform = new TransformNode("scale(1.4f,3.9f,1.4f);translate(0,0.5,0)", m);
 		ModelNode upperBranchShape = new ModelNode("Cube(1)", cube);
 
