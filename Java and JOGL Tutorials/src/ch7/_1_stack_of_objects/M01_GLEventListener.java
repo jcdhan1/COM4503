@@ -127,10 +127,13 @@ public class M01_GLEventListener implements GLEventListener {
 		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, 4, 0), modelMatrix);
 
 		sphere = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId3, textureId4);
+
+		//ch 7.1 Exercise 1, change Cube to Sphere for Exercise 2
 		sphere2 = new Model(gl, camera, light, new Shader(gl,
 				user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
 				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04_notex.glsl"), material,
-				Mat4.multiply(Mat4Transform.translate(0, 3, 0), modelMatrix), m);//ch 7.1 Exercise 1
+				Mat4.multiply(Mat4Transform.translate(0, 3, 0), modelMatrix),
+				new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone()));
 
 		// no texture version
 		// sphere = new Model(gl, camera, light, shader, material, modelMatrix, m);
