@@ -67,13 +67,14 @@ public class M01_GLEventListener implements GLEventListener {
 	 */
 
 	private Camera camera;
-	private Model tt1, cube, sphere;
+	private Model tt1, cube, sphere, sphere2;//ch 7.1 Exercise 1
 	private Light light;
 
 	private void disposeModels(GL3 gl) {
 		tt1.dispose(gl);
 		cube.dispose(gl);
 		sphere.dispose(gl);
+		sphere2.dispose(gl);//ch 7.1 Exercise 1
 		light.dispose(gl);
 	}
 
@@ -81,38 +82,55 @@ public class M01_GLEventListener implements GLEventListener {
 		String user_dir = System.getProperty("user.dir");
 		System.out.println("Working Directory = " + user_dir);
 		createRandomNumbers();
-		int[] textureId0 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\chequerboard.jpg");
-		int[] textureId1 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\container2.jpg");
-		int[] textureId2 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\container2_specular.jpg");
-		int[] textureId3 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade.jpg");
-		int[] textureId4 = TextureLibrary.loadTexture(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade_specular.jpg");
+		int[] textureId0 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\chequerboard.jpg");
+		int[] textureId1 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\container2.jpg");
+		int[] textureId2 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\container2_specular.jpg");
+		int[] textureId3 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade.jpg");
+		int[] textureId4 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade_specular.jpg");
 
 		light = new Light(gl);
 		light.setCamera(camera);
 
 		Mesh m = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-		Shader shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_tt_05.glsl", user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_tt_05.glsl");
-		Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
+		Shader shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_tt_05.glsl",
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_tt_05.glsl");
+		Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f),
+				new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
 		Mat4 modelMatrix = Mat4Transform.scale(16, 1f, 16);
 		tt1 = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId0);
 
 		m = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-		shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_cube_04.glsl", user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_cube_04.glsl");
-		material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-		modelMatrix = Mat4.multiply(Mat4Transform.scale(4, 4, 4), Mat4Transform.translate(0, 0.5f, 0));
+		shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_cube_04.glsl",
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_cube_04.glsl");
+		material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f),
+				new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+		modelMatrix = Mat4.multiply(Mat4Transform.scale(4, 4, 4),
+				Mat4Transform.translate(0, 0.5f, 0));
 		cube = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId1, textureId2);
 
 		m = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-		shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl", user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04.glsl");
+		shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04.glsl");
 
 		// no texture version
 		// shader = new Shader(gl, "vs_sphere_04.txt", "fs_sphere_04_notex.txt");
 
-		material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-		modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3), Mat4Transform.translate(0, 0.5f, 0));
+		material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f),
+				new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+		modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3),
+				Mat4Transform.translate(0, 0.5f, 0));
 		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, 4, 0), modelMatrix);
 
 		sphere = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId3, textureId4);
+		sphere2 = new Model(gl, camera, light, new Shader(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04_notex.glsl"), material,
+				Mat4.multiply(Mat4Transform.translate(0, 3, 0), modelMatrix), m);//ch 7.1 Exercise 1
 
 		// no texture version
 		// sphere = new Model(gl, camera, light, shader, material, modelMatrix, m);
@@ -127,6 +145,7 @@ public class M01_GLEventListener implements GLEventListener {
 		tt1.render(gl);
 		cube.render(gl);
 		sphere.render(gl);
+		sphere2.render(gl);
 	}
 
 	// The light's postion is continually being changed, so needs to be calculated for each frame.
