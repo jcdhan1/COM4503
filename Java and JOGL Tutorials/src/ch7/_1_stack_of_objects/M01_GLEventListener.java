@@ -92,6 +92,10 @@ public class M01_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade.jpg");
 		int[] textureId4 = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\jade_specular.jpg");
+		int[] textureId5 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\ear0xuu2.jpg");
+		int[] textureId6 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_1_stack_of_objects\\textures\\ear0xuu2_specular.jpg");
 
 		light = new Light(gl);
 		light.setCamera(camera);
@@ -130,10 +134,11 @@ public class M01_GLEventListener implements GLEventListener {
 
 		//ch 7.1 Exercise 1, change Cube to Sphere for Exercise 2
 		sphere2 = new Model(gl, camera, light, new Shader(gl,
-				user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
-				user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04_notex.glsl"), material,
-				Mat4.multiply(Mat4Transform.translate(0, 3, 0), modelMatrix),
-				new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone()));
+			user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
+			user_dir + "\\src\\ch7\\_1_stack_of_objects\\fs_sphere_04.glsl"), material,
+			Mat4.multiply(Mat4Transform.translate(0, 3, 0), modelMatrix),
+			new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone()),
+			textureId5, textureId6); //ch 7.1 Exercise 3;
 
 		// no texture version
 		// sphere = new Model(gl, camera, light, shader, material, modelMatrix, m);
