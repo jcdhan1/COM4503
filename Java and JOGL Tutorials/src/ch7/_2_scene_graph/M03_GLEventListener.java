@@ -98,10 +98,11 @@ public class M03_GLEventListener implements GLEventListener {
 	private Light light;
 	private SGNode twoBranchRoot;
 
-	private TransformNode translateX, rotateAll, rotateUpper;
+	private TransformNode translateX, rotateAll, rotateUpper, rotateHighest;
 	private float xPosition = 0;
 	private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
 	private float rotateUpperAngleStart = -60, rotateUpperAngle = rotateUpperAngleStart;
+	private float rotateHighestAngleStart = -90, rotateHighestAngle = rotateHighestAngleStart;
 
 	private void initialise(GL3 gl) {
 		String user_dir = System.getProperty("user.dir");
@@ -113,6 +114,10 @@ public class M03_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\ch7\\_2_scene_graph\\textures\\jade.jpg");
 		int[] textureId2 = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\ch7\\_2_scene_graph\\textures\\jade_specular.jpg");
+		int[] textureId3 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_2_scene_graph\\textures\\ear0xuu2.jpg");
+		int[] textureId4 = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\ch7\\_2_scene_graph\\textures\\ear0xuu2_specular.jpg");
 
 		light = new Light(gl);
 		light.setCamera(camera);
@@ -126,13 +131,15 @@ public class M03_GLEventListener implements GLEventListener {
 		Mat4 modelMatrix = Mat4Transform.scale(16, 1f, 16);
 		floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId0);
 
+		//***SPHERES***
+		Vec3 sphereDim0 = new Vec3(4,4,4), transVec = new Vec3(0,0.5f,0);
 		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch7\\_2_scene_graph\\vs_cube_04.glsl",
 				user_dir + "\\src\\ch7\\_2_scene_graph\\fs_cube_04.glsl");
 		material = new Material(new Vec3(1.0f, 0.5f, 0.31f),
 				new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-		modelMatrix = Mat4.multiply(Mat4Transform.scale(4, 4, 4),
-				Mat4Transform.translate(0, 0.5f, 0));
+		modelMatrix = Mat4.multiply(Mat4Transform.scale(sphereDim0),
+				Mat4Transform.translate(transVec));
 		sphere = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId1, textureId2);
 
 		twoBranchRoot = new NameNode("two-branch structure");
@@ -141,19 +148,32 @@ public class M03_GLEventListener implements GLEventListener {
 		rotateAll = new TransformNode("rotateAroundZ(" + rotateAllAngle + ")",
 				Mat4Transform.rotateAroundZ(rotateAllAngle));
 		NameNode lowerBranch = new NameNode("lower branch");
-		Mat4 m = Mat4Transform.scale(2.5f, 4, 2.5f);
-		m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-		TransformNode makeLowerBranch = new TransformNode("scale(2.5,4,2.5); translate(0,0.5,0)", m);
+		Mat4 m = Mat4Transform.scale(2.5f, sphereDim0.y, 2.5f);
+		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
+		TransformNode makeLowerBranch = new TransformNode("scale(2.5,"+sphereDim0.y+",2.5); translate"+transVec, m);
 		ModelNode cube0Node = new ModelNode("Sphere(0)", sphere);
-		TransformNode translateToTop = new TransformNode("translate(0,4,0)",
-				Mat4Transform.translate(0, 4, 0));
+		TransformNode translateToTop = new TransformNode("translate(0,"+sphereDim0.y+",0)",
+				Mat4Transform.translate(0, sphereDim0.y, 0));
 		rotateUpper = new TransformNode("rotateAroundZ(" + rotateUpperAngle + ")",
 				Mat4Transform.rotateAroundZ(rotateUpperAngle));
 		NameNode upperBranch = new NameNode("upper branch");
-		m = Mat4Transform.scale(1.4f, 3.1f, 1.4f);
-		m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-		TransformNode makeUpperBranch = new TransformNode("scale(1.4f,3.1f,1.4f);translate(0,0.5,0)", m);
-		ModelNode cube1Node = new ModelNode("Sphere(1)", sphere);
+		Vec3 sphereDim1 = new Vec3(1.4f, 3.1f, 1.4f);
+		m = Mat4Transform.scale(sphereDim1);
+		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
+		TransformNode makeUpperBranch = new TransformNode("scale"+sphereDim1+";translate"+transVec, m);
+		ModelNode sphere1Node = new ModelNode("Sphere(1)", sphere);
+		//ch 7.3 Exercise 1
+		TransformNode translateHigher = new TransformNode("translate(0,"+sphereDim1.y+",0)",
+				Mat4Transform.translate(0, sphereDim1.y, 0));
+		rotateHighest = new TransformNode("rotateAroundZ(" + rotateHighestAngle + ")",
+				Mat4Transform.rotateAroundZ(rotateHighestAngle));
+		NameNode highestBranch = new NameNode("highest branch");
+		Vec3 sphereDim2 = new Vec3(2, 2, 2);
+		m = Mat4Transform.scale(sphereDim2);
+		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
+		TransformNode makeHighestBranch = new TransformNode("scale"+sphereDim2+";translate"+transVec, m);
+		ModelNode sphere2Node = new ModelNode("Sphere(2)",
+				new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId3, textureId4));
 
 		twoBranchRoot.addChild(translateX);
 			translateX.addChild(rotateAll);
@@ -164,7 +184,12 @@ public class M03_GLEventListener implements GLEventListener {
 						translateToTop.addChild(rotateUpper);
 							rotateUpper.addChild(upperBranch);
 								upperBranch.addChild(makeUpperBranch);
-									makeUpperBranch.addChild(cube1Node);
+									makeUpperBranch.addChild(sphere1Node);
+								upperBranch.addChild(translateHigher);
+									translateHigher.addChild(highestBranch);
+										highestBranch.addChild(makeHighestBranch);
+											makeHighestBranch.addChild(sphere2Node);
+
 		twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
 		//twoBranchRoot.print(0, false);
 		//System.exit(0);
