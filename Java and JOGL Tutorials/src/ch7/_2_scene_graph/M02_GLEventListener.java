@@ -141,15 +141,15 @@ public class M02_GLEventListener implements GLEventListener {
 
 		twoBranchRoot.addChild(lowerBranch);
 			lowerBranch.addChild(lowerBranchTransform);
-			lowerBranchTransform.addChild(lowerBranchShape);
+				lowerBranchTransform.addChild(lowerBranchShape);
 			lowerBranch.addChild(translateToTop);
 				translateToTop.addChild(upperBranch);
-				upperBranch.addChild(upperBranchTransform);
-				upperBranchTransform.addChild(upperBranchShape);
-				upperBranch.addChild(translateHigher);
-					translateHigher.addChild(higherBranch);
-					higherBranch.addChild(higherBranchTransform);
-					higherBranchTransform.addChild(higherBranchShape);
+					upperBranch.addChild(upperBranchTransform);
+						upperBranchTransform.addChild(upperBranchShape);
+					upperBranch.addChild(translateHigher);
+						translateHigher.addChild(higherBranch);
+							higherBranch.addChild(higherBranchTransform);
+								higherBranchTransform.addChild(higherBranchShape);
 		twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
 		// Following two lines can be used to check scene graph construction is correct
 		//twoBranchRoot.print(0, false);
