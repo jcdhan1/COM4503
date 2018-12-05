@@ -255,6 +255,7 @@ public class M04_GLEventListener implements GLEventListener {
 		TransformNode rightlegTransform = new TransformNode("rightleg transform", m);
 		ModelNode rightLegShape = new ModelNode("Cube(rightleg)", cube);
 
+		//ch 7.3.1 Exercise 1
 		robotRoot.addChild(robotMoveTranslate);
 			robotMoveTranslate.addChild(robotTranslate);
 				robotTranslate.addChild(body);
@@ -285,20 +286,25 @@ public class M04_GLEventListener implements GLEventListener {
 		//System.exit(0);
 	}
 
+	//ch 7.3.1 Exercise 2
 	private void render(GL3 gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		light.setPosition(getLightPosition());  // changing light position each frame
 		light.render(gl);
 		floor.render(gl);
-		if (animation) updateLeftArm();
+		if (animation){
+			updatesArms();
+		}
 		robotRoot.draw(gl);
 	}
 
-	private void updateLeftArm() {
+	private void updatesArms() {
 		double elapsedTime = getSeconds() - startTime;
 		float rotateAngle = 180f + 90f * (float) Math.sin(elapsedTime);
-		leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
+		leftArmRotate.setTransform(Mat4Transform.rotateAroundX(-rotateAngle));
+		rightArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
 		leftArmRotate.update();
+		rightArmRotate.update();
 	}
 
 	// The light's postion is continually being changed, so needs to be calculated for each frame.
