@@ -98,7 +98,7 @@ public class M02_GLEventListener implements GLEventListener {
 		floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId0);
 
 		//***CUBE***
-		Vec3 transVec = new Vec3(0,0.5f,0);//ch 7.2 Exercise 1
+		Vec3 transVec = new Vec3(0, 0.5f, 0);//ch 7.2 Exercise 1
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch7\\_2_scene_graph\\vs_cube_04.glsl",
 				user_dir + "\\src\\ch7\\_2_scene_graph\\fs_cube_04.glsl");
@@ -117,40 +117,39 @@ public class M02_GLEventListener implements GLEventListener {
 		twoBranchRoot = new NameNode("two-branch structure");
 		NameNode lowerBranch = new NameNode("lower branch");
 		float lowerBranchHeight = 4.0f;//ch 7.2 Exercise 1
-		Mat4 m = Mat4Transform.scale(2,lowerBranchHeight,2);
+		Mat4 m = Mat4Transform.scale(2, lowerBranchHeight, 2);
 		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
-		TransformNode lowerBranchTransform = new TransformNode("scale(2,"+lowerBranchHeight+",2);"+transVec.toString(), m);
+		TransformNode lowerBranchTransform = new TransformNode("scale(2," + lowerBranchHeight + ",2);" + transVec.toString(), m);
 		ModelNode lowerBranchShape = new ModelNode("Cube(0)", cube);
 
-		TransformNode translateToTop = new TransformNode("translate(0,"+lowerBranchHeight+",0)",
+		TransformNode translateToTop = new TransformNode("translate(0," + lowerBranchHeight + ",0)",
 				Mat4Transform.translate(0, lowerBranchHeight, 0));
 		NameNode upperBranch = new NameNode("upper branch");
 		float upperBranchHeight = 3.9f;//ch 7.2 Exercise 2
 		m = Mat4Transform.scale(1.4f, upperBranchHeight, 1.4f);
 		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
-		TransformNode upperBranchTransform = new TransformNode("scale(1.4f,"+upperBranchHeight+",1.4f);"+transVec.toString(), m);
+		TransformNode upperBranchTransform = new TransformNode("scale(1.4f," + upperBranchHeight + ",1.4f);" + transVec.toString(), m);
 		ModelNode upperBranchShape = new ModelNode("Cube(1)", cube);
 		//ch 7.2 Exercise 2
-		TransformNode translateHigher = new TransformNode("translate(0,"+(upperBranchHeight)+",0)",
+		TransformNode translateHigher = new TransformNode("translate(0," + (upperBranchHeight) + ",0)",
 				Mat4Transform.translate(0, upperBranchHeight, 0));
 		NameNode higherBranch = new NameNode("upper branch");
 		m = Mat4Transform.scale(1, 2, 1);
 		m = Mat4.multiply(m, Mat4Transform.translate(transVec));
-		TransformNode higherBranchTransform = new TransformNode("scale(1,2,1);"+transVec.toString(), m);
+		TransformNode higherBranchTransform = new TransformNode("scale(1,2,1);" + transVec.toString(), m);
 		ModelNode higherBranchShape = new ModelNode("Cube(2)", cube);
 
 		twoBranchRoot.addChild(lowerBranch);
-		lowerBranch.addChild(lowerBranchTransform);
-		lowerBranchTransform.addChild(lowerBranchShape);
-		lowerBranch.addChild(translateToTop);
-
-		translateToTop.addChild(upperBranch);
-		upperBranch.addChild(upperBranchTransform);
-		upperBranchTransform.addChild(upperBranchShape);
-		upperBranch.addChild(translateHigher);
-		translateHigher.addChild(higherBranch);
-		higherBranch.addChild(higherBranchTransform);
-		higherBranchTransform.addChild(higherBranchShape);
+			lowerBranch.addChild(lowerBranchTransform);
+			lowerBranchTransform.addChild(lowerBranchShape);
+			lowerBranch.addChild(translateToTop);
+				translateToTop.addChild(upperBranch);
+				upperBranch.addChild(upperBranchTransform);
+				upperBranchTransform.addChild(upperBranchShape);
+				upperBranch.addChild(translateHigher);
+					translateHigher.addChild(higherBranch);
+					higherBranch.addChild(higherBranchTransform);
+					higherBranchTransform.addChild(higherBranchShape);
 		twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
 		// Following two lines can be used to check scene graph construction is correct
 		//twoBranchRoot.print(0, false);
