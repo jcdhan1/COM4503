@@ -2,13 +2,7 @@ package ch7._1_stack_of_objects;
 
 import ch7._1_stack_of_objects.gmaths.*;
 
-import java.nio.*;
-
-import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.util.*;
-import com.jogamp.opengl.util.awt.*;
-import com.jogamp.opengl.util.glsl.*;
 
 public class M01_GLEventListener implements GLEventListener {
 
@@ -67,12 +61,12 @@ public class M01_GLEventListener implements GLEventListener {
 	 */
 
 	private Camera camera;
-	private Model tt1, cube, sphere, sphere2;//ch 7.1 Exercise 1
+	private Model tt1, skybox, sphere, sphere2;//ch 7.1 Exercise 1
 	private Light light;
 
 	private void disposeModels(GL3 gl) {
 		tt1.dispose(gl);
-		cube.dispose(gl);
+		skybox.dispose(gl);
 		sphere.dispose(gl);
 		sphere2.dispose(gl);//ch 7.1 Exercise 1
 		light.dispose(gl);
@@ -115,7 +109,7 @@ public class M01_GLEventListener implements GLEventListener {
 				new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
 		modelMatrix = Mat4.multiply(Mat4Transform.scale(4, 4, 4),
 				Mat4Transform.translate(0, 0.5f, 0));
-		cube = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId1, textureId2);
+		skybox = new Model(gl, camera, light, shader, material, modelMatrix, m, textureId1, textureId2);
 
 		m = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 		shader = new Shader(gl, user_dir + "\\src\\ch7\\_1_stack_of_objects\\vs_sphere_04.glsl",
@@ -151,7 +145,7 @@ public class M01_GLEventListener implements GLEventListener {
 		light.render(gl);
 
 		tt1.render(gl);
-		cube.render(gl);
+		skybox.render(gl);
 		sphere.render(gl);
 		sphere2.render(gl);
 	}
