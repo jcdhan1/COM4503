@@ -2,9 +2,6 @@ package aca15jch;
 
 import aca15jch.gmaths.*;
 
-import java.nio.*;
-
-import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
 public class Model {
@@ -61,6 +58,7 @@ public class Model {
 		shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
 		shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffuse());
 		shader.setVec3(gl, "light.specular", light.getMaterial().getSpecular());
+		shader.setVec3(gl, "light.direction", light.getDirection());
 
 		shader.setVec3(gl, "material.ambient", material.getAmbient());
 		shader.setVec3(gl, "material.diffuse", material.getDiffuse());

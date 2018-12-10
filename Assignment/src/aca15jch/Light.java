@@ -7,55 +7,122 @@ import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
+/**
+ * @author aca15jch
+ * Reused code from Dr. Maddock's Light class. New features I've added include directional lighting.
+ */
 public class Light {
 
 	private Material material;
-	private Vec3 position;
+	private Vec3 position, direction;
 	private Mat4 model;
 	private Shader shader;
 	private Camera camera;
 
+	/**
+	 * Constructor
+	 * @param gl
+	 */
 	public Light(GL3 gl) {
 		material = new Material();
-		material.setAmbient(0.5f, 0.5f, 0.5f);
-		material.setDiffuse(0.8f, 0.8f, 0.8f);
-		material.setSpecular(0.8f, 0.8f, 0.8f);
-		position = new Vec3(3f, 2f, 1f);
+		material.setAmbient(1, 1, 1);
+		material.setDiffuse(1, 1, 1);
+		material.setSpecular(1, 1, 1);
+		position = new Vec3(0, 0, 0);
+		direction = new Vec3(1,0,0);
 		model = new Mat4(1);
 		String user_dir = System.getProperty("user.dir");
 		System.out.println("Working Directory = " + user_dir);
-		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_light_01.glsl", user_dir + "\\src\\aca15jch\\fs_light_01.glsl");
+		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_light_01.glsl",
+								user_dir + "\\src\\aca15jch\\fs_light_01.glsl");
 		fillBuffers(gl);
 	}
 
+	/**
+	 * Set the position vector.
+	 * @param v
+	 */
 	public void setPosition(Vec3 v) {
 		position.x = v.x;
 		position.y = v.y;
 		position.z = v.z;
 	}
 
+	/**
+	 * Set components of position vector.
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
 	public void setPosition(float x, float y, float z) {
 		position.x = x;
 		position.y = y;
 		position.z = z;
 	}
 
+	/**
+	 * Get the position vector.
+	 */
 	public Vec3 getPosition() {
 		return position;
 	}
 
+	/**
+	 * Set the direction vector.
+	 * @param v
+	 */
+	public void setDirection(Vec3 v) {
+		position.x = v.x;
+		position.y = v.y;
+		position.z = v.z;
+	}
+
+	/**
+	 * Set components of direction vector.
+	 * @param x
+	 * @param y
+	 * @param z
+	 */
+	public void setDirection(float x, float y, float z) {
+		position.x = x;
+		position.y = y;
+		position.z = z;
+	}
+
+	/**
+	 * Get the direction vector.
+	 */
+	public Vec3 getDirection() {
+		return position;
+	}
+
+	/**
+	 * Set the material.
+	 * @param m
+	 */
 	public void setMaterial(Material m) {
 		material = m;
 	}
 
+	/**
+	 * Get the material.
+	 */
 	public Material getMaterial() {
 		return material;
 	}
 
+	/**
+	 * Set the camera.
+	 * @param camera
+	 */
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
 
+	/**
+	 * Render
+	 * @param gl
+	 */
 	public void render(GL3 gl) {
 		Mat4 model = new Mat4(1);
 		model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
@@ -71,6 +138,10 @@ public class Light {
 		gl.glBindVertexArray(0);
 	}
 
+	/**
+	 * Dispose
+	 * @param gl
+	 */
 	public void dispose(GL3 gl) {
 		gl.glDeleteBuffers(1, vertexBufferId, 0);
 		gl.glDeleteVertexArrays(1, vertexArrayId, 0);
@@ -119,6 +190,10 @@ public class Light {
 	private int[] vertexArrayId = new int[1];
 	private int[] elementBufferId = new int[1];
 
+	/**
+	 * Fill buffers
+	 * @param gl
+	 */
 	private void fillBuffers(GL3 gl) {
 		gl.glGenVertexArrays(1, vertexArrayId, 0);
 		gl.glBindVertexArray(vertexArrayId[0]);
@@ -140,5 +215,4 @@ public class Light {
 		gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
 		gl.glBindVertexArray(0);
 	}
-
 }

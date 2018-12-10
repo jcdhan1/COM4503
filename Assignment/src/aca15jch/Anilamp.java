@@ -58,7 +58,7 @@ public class Anilamp extends JFrame implements ActionListener {
 		b = new JButton("Jump");
 		b.addActionListener(this);
 		p.add(b);
-		b = new JButton("decrease X position");
+		b = new JButton("Reset");
 		b.addActionListener(this);
 		p.add(b);
 		this.add(p, BorderLayout.SOUTH);
@@ -84,8 +84,8 @@ public class Anilamp extends JFrame implements ActionListener {
 			canvas.requestFocusInWindow();
 		} else if (e.getActionCommand().equalsIgnoreCase("Jump")) {
 			glEventListener.jump();
-		} else if (e.getActionCommand().equalsIgnoreCase("decrease X position")) {
-			glEventListener.decXPosition();
+		} else if (e.getActionCommand().equalsIgnoreCase("Reset")) {
+			glEventListener.resetPosition();
 		} else if (e.getActionCommand().equalsIgnoreCase("quit"))
 			System.exit(0);
 	}

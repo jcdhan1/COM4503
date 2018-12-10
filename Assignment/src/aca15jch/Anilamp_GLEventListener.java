@@ -95,9 +95,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		updateX();
 	}
 
-	public void decXPosition() {
-		xPosition -= 0.5f;
-		if (xPosition < -5f) xPosition = -5f;
+	public void resetPosition() {
+		xPosition =-3;
 		updateX();
 	}
 
@@ -125,7 +124,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	private TransformNode translateX, rotateBicep, rotateForearm, rotateHead;
 	private float a4Length  = 210f,
-				  xPosition = 0,
+				  xPosition = 3,
 			      rotateBicepAngleStart =  30, rotateBicepAngle		= rotateBicepAngleStart,
 			 	  rotateForearmAngleStart   = -60, rotateForearmAngle   = rotateForearmAngleStart,
 				  rotateHeadAngleStart = 30, rotateHeadAngle = rotateHeadAngleStart;
@@ -171,7 +170,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		int[] smartphone_net_specular = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\smartphone_net_specular.jpg");
 
-
+		//Instantiate a Light object that represents the bulb of the lamp.
 		light = new Light(gl);
 		light.setCamera(camera);
 
@@ -431,7 +430,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	private void render(GL3 gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		light.setPosition(xPosition+lampHeadDim.x/2,1+lampHeadDim.y,0);  // changing light position each frame
+		Vec3 bulb = new Vec3(xPosition+lampHeadDim.x/2,1+lampHeadDim.y,0);
+
+		light.setPosition(bulb);
+		light.setDirection(4+xPosition, 0, 0);
 		light.render(gl);
 		floor.render(gl);
 		for (Model wall : this.walls) {
@@ -469,14 +471,6 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		lampRoot.update(); // IMPORTANT – the scene graph has changed
 	}
 
-	// The light's postion is continually being changed, so needs to be calculated for each frame.
-	private Vec3 getLightPosition() {
-		double elapsedTime = getSeconds() - startTime;
-		float x = 5.0f * (float) (Math.sin(Math.toRadians(elapsedTime * 50))) + xPosition;
-		float y = 2.7f;
-		float z = 5.0f * (float) (Math.cos(Math.toRadians(elapsedTime * 50)));
-		return new Vec3(x, y, z);
-	}
 	private Mat4 vertWallMatrix(boolean top) {
 		float size=16/3f;
 		Mat4 modelMatrix = new Mat4(1);
