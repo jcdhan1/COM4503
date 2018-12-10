@@ -22,7 +22,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	public Anilamp_GLEventListener(Camera camera) {
 		this.camera = camera;
-		this.camera.setPosition(new Vec3(4f, 12f, 18f));
+		this.camera.setPosition(new Vec3(3f, 3f, 3f));
 	}
 
 	// ***************************************************
@@ -90,19 +90,28 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	 */
 
 	public void jump() {
-		xPosition += 0.5f;
-		if (xPosition > 5f) xPosition = 5f;
-		updateX();
+		boolean valid=false;
+		while (!valid) {
+			zPosition = 1 - 2 * (float) Math.random();
+			xPosition = 1 + (float) (Math.random() * tabletopDim.x);
+			boolean avoidsPaperweight = !(xPosition<1.5 && zPosition <1.5);
+			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x-(lampBaseDim.x+1));
+			valid = avoidsPaperweight && avoidsSmartphoneDeskTidy;
+		}
+		updateLoc();
 	}
 
 	public void resetPosition() {
-		xPosition =-3;
-		updateX();
+		xPosition = 1.51f;
+		zPosition = 1.51f;
+		updateLoc();
 	}
 
-	private void updateX() {
-		translateX.setTransform(Mat4Transform.translate(xPosition, 0, 0));
-		translateX.update(); // IMPORTANT – the scene graph has changed
+	private void updateLoc() {
+		double yaw =  Math.atan2(xPosition,zPosition)*180/Math.PI;
+		Mat4 yawMat = Mat4Transform.rotateAroundY((float) yaw - 90);
+		translateXZ.setTransform(Mat4.multiply(Mat4Transform.translate(xPosition, (lampBaseDim.y-tabletopDim.y)/2, zPosition),yawMat));
+		translateXZ.update(); // IMPORTANT – the scene graph has changed
 	}
 
 
@@ -122,9 +131,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	private Light light;
 	private SGNode lampRoot;
 
-	private TransformNode translateX, rotateBicep, rotateForearm, rotateHead;
+	private TransformNode translateXZ, rotateBicep, rotateForearm, rotateHead;
 	private float a4Length  = 210f,
-				  xPosition = 3,
+				  xPosition = 1.51f, zPosition = 1.51f,
 			      rotateBicepAngleStart =  30, rotateBicepAngle		= rotateBicepAngleStart,
 			 	  rotateForearmAngleStart   = -60, rotateForearmAngle   = rotateForearmAngleStart,
 				  rotateHeadAngleStart = 30, rotateHeadAngle = rotateHeadAngleStart;
@@ -190,17 +199,18 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\fs_textured_blinn_phong.glsl");
 		material = new Material(new Vec3(0.81f, 0.81f, 0),
 				new Vec3(0.81f, 0.81f, 0), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-		modelMatrix = Mat4Transform.scale(16, 0, 16);
+		Mat4 transWallMat = Mat4Transform.translate(0, -(legDim.y+tabletopDim.y),tabletopDim.z);
+		modelMatrix = Mat4.multiply(transWallMat,Mat4Transform.scale(16, 0, 16));
 		this.floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, chequerboard);
 
-		this.walls.add(new Model(gl, camera, light, shader, material, vertWallMatrix(false), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, vertWallMatrix(true), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, horizWallMatrix(false), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, horizWallMatrix(true), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, vertWallMatrix(false)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, vertWallMatrix(true)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, horizWallMatrix(false)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, horizWallMatrix(true)), mesh, wallpaper));
 
 		float minHeight = 0.5f;
 		//***TABLE***
-		Mat4 tableTransMat = Mat4Transform.translate(new Vec3(0,this.legDim.y,-(this.tabletopDim.z*1.5f)));
+		Mat4 tableTransMat = Mat4Transform.translate(new Vec3(tabletopDim.x/2,-tabletopDim.y,0));
 		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_textured_blinn_phong.glsl",
 				user_dir + "\\src\\aca15jch\\fs_textured_blinn_phong.glsl");
 		material = new Material(new Vec3(1, 1, 1),
@@ -310,7 +320,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\fs_textured_blinn_phong.glsl");
 		mesh = new Mesh(gl, CubeNet.vertices.clone(), CubeNet.indices.clone());
 		modelMatrix = Mat4.multiply(tableTransMat,
-				Mat4.multiply(Mat4Transform.translate(0,(smartphoneDim.y+tabletopDim.y)/2,0),
+				Mat4.multiply(Mat4Transform.translate(deskTidyTransVec.x,(smartphoneDim.y+tabletopDim.y)/2,-deskTidyTransVec.z),
 						Mat4Transform.scale(smartphoneDim)));
 		this.smartphone = new Model(gl, camera, light, shader, new Material(new Vec3(0.1f, 0.1f, 0.1f),
 				new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.5f, 0.5f, 0.5f), 0.1f),
@@ -323,8 +333,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		material = new Material(new Vec3(0.1f, 0.1f, 0.1f),
 				   new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.5f, 0.5f, 0.5f), 30);
 		//Base
-		Vec3 randomPosition = new Vec3(xPosition, 0, 0);
-		translateX = new TransformNode("translate(" + xPosition + ",0,0)",
+		Vec3 randomPosition = new Vec3(xPosition, (lampBaseDim.y-tabletopDim.y)/2, zPosition);
+		translateXZ = new TransformNode("translate(" + xPosition + ",0,0)",
 									   Mat4Transform.translate(randomPosition));
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		Model lampBase = new Model(gl, camera, light, shader, material,
@@ -376,8 +386,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		TransformNode makeHighestBranch = new TransformNode("scale("+lampHeadDim+")", m);
 		ModelNode cube2Node = new ModelNode("Cube(2)",
 				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular));
-		lampRoot.addChild(translateX);
-			translateX.addChild(branch0);
+		lampRoot.addChild(translateXZ);
+			translateXZ.addChild(branch0);
 				branch0.addChild(makeBranch0);
 					makeBranch0.addChild(lampBaseNode);
 				branch0.addChild(rotateBicep);
@@ -430,10 +440,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	private void render(GL3 gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		Vec3 bulb = new Vec3(xPosition+lampHeadDim.x/2,1+lampHeadDim.y,0);
+		Vec3 bulbPos = new Vec3(xPosition+lampHeadDim.x/2,1+lampHeadDim.y,zPosition);
 
-		light.setPosition(bulb);
-		light.setDirection(4+xPosition, 0, 0);
+		light.setPosition(bulbPos);
+		light.setDirection(xPosition, 0, zPosition);
 		light.render(gl);
 		floor.render(gl);
 		for (Model wall : this.walls) {
