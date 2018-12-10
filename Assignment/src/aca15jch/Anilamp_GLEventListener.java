@@ -96,7 +96,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	/**
 	 * Random jump
 	 */
-	public void jump() {
+	public void jump()  {
+		this.jumping=true;
 		boolean valid=false;
 		while (!valid) {
 			zPosition = 1 - 2 * (float) Math.random();
@@ -104,7 +105,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 			boolean avoidsPaperweight = !(xPosition<1.55 && zPosition <1.55);
 			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x-(lampBaseDim.x+1));
 			valid = avoidsPaperweight && avoidsSmartphoneDeskTidy;
+			updateBranches();
 		}
+
 		retransform();
 	}
 
@@ -125,9 +128,11 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		Mat4 yawMat = Mat4Transform.rotateAroundY((float) yaw - 90);
 		translateXZ.setTransform(Mat4.multiply(Mat4Transform.translate(xPosition, (lampBaseDim.y-tabletopDim.y)/2, zPosition),yawMat));
 		translateXZ.update(); // IMPORTANT – the scene graph has changed
+		this.jumping = false;
 	}
 
 	/*FIELDS FOR THE SCENE*/
+	private boolean jumping;
 	private Camera camera;
 	private Model skybox, floor, tabletop, paper, paperweight, smartphone;
 	private List<Model> walls	 = new ArrayList<Model>(),
@@ -181,6 +186,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\textures\\ear0xuu2_specular.jpg");
 		int[] metal = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\metal.jpg");
+		int[] metal_specular = TextureLibrary.loadTexture(gl,
+				user_dir + "\\src\\aca15jch\\textures\\metal_specular.jpg");
 		int[] smartphone_net = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\smartphone_net.jpg");
 		int[] smartphone_net_specular = TextureLibrary.loadTexture(gl,
@@ -279,7 +286,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 								Mat4.multiply(Mat4Transform.translate(tx,0,tz),
 									Mat4.multiply(Mat4Transform.rotateAroundY(90 * i),
 									Mat4Transform.scale(deskTidyPanelDim)))));
-			this.deskTidy.add(new Model(gl, camera, light, shader, material, modelMatrix, mesh, metal, metal));
+			this.deskTidy.add(new Model(gl, camera, light, shader, material, modelMatrix, mesh, metal, metal_specular));
 		}
 		//Base of desk tidy
 		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
@@ -345,7 +352,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 									   Mat4Transform.translate(randomPosition));
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		Model lampBase = new Model(gl, camera, light, shader, material,
-				modelMatrix, mesh, metal, metal);
+				modelMatrix, mesh, metal, metal_specular);
 		NameNode branch0 = new NameNode("Branch 0");
 		TransformNode makeBranch0 = new TransformNode("scale("+lampBaseDim+")", Mat4Transform.scale(lampBaseDim));
 		ModelNode lampBaseNode = new ModelNode("Lamp Base", lampBase);
@@ -353,7 +360,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		rotateBicep = new TransformNode("rotateAroundZ(" + rotateBicepAngle + ")",
 				Mat4Transform.rotateAroundZ(rotateBicepAngle));
 		mesh = new Mesh(gl, Cylinder.vertices.clone(), Cylinder.indices.clone());
-		Model lampBicep = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal);
+		Model lampBicep = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular);
 		NameNode branch1 = new NameNode("Branch 1");
 		Vec3 transVec0 = new Vec3 (0,lampBicepDim.y/2,0);
 		Mat4 m = Mat4.multiply(Mat4Transform.translate(transVec0),Mat4Transform.scale(lampBicepDim));
@@ -361,7 +368,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		ModelNode lampBicepNode = new ModelNode("Lamp Bicep", lampBicep);
 		//Elbow
 		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-		Model lampElbow = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal);
+		Model lampElbow = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular);
 		NameNode branch2 = new NameNode("Branch 2");
 		Vec3 transVec1 = new Vec3 (0,lampBicepDim.y,0);
 		m = Mat4.multiply(Mat4Transform.translate(transVec1),
@@ -375,7 +382,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		rotateForearm = new TransformNode("rotateAroundZ(" + rotateForearmAngle + ")",
 				Mat4Transform.rotateAroundZ(rotateForearmAngle));
 		mesh = new Mesh(gl, Cylinder.vertices.clone(), Cylinder.indices.clone());
-		Model lampForearm = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal);
+		Model lampForearm = new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular);
 		NameNode branch3 = new NameNode("Branch 3");
 		m = Mat4Transform.scale(lampForearmDim);
 		Vec3 transVec2 = new Vec3 (0,lampForearmDim.y/2,0);
@@ -392,7 +399,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		m = Mat4Transform.scale(lampHeadDim);
 		TransformNode makeBranch4 = new TransformNode("scale("+lampHeadDim+")", m);
 		ModelNode lampHeadNode = new ModelNode("Lamp Head",
-				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal));
+				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular));
 		//Bulb
 		TransformNode attachToHead = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
 				Mat4Transform.translate(lampHeadDim.x/2, 0, 0));
@@ -523,8 +530,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		gl.glFrontFace(gl.GL_CW);
 		skybox.render(gl);
 		gl.glFrontFace(gl.GL_CCW);
-
-		updateBranches();
+		if (this.jumping) {
+			updateBranches();
+		}
 		lampRoot.draw(gl);
 	}
 
