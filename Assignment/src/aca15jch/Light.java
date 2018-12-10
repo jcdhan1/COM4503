@@ -32,6 +32,9 @@ public class Light {
 		direction = new Vec3(1,0,0);
 		model = new Mat4(1);
 		String user_dir = System.getProperty("user.dir");
+		if (user_dir.endsWith("src")){
+			user_dir = user_dir.substring(0,user_dir.length()-4);
+		}
 		System.out.println("Working Directory = " + user_dir);
 		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_light_01.glsl",
 								user_dir + "\\src\\aca15jch\\fs_light_01.glsl");

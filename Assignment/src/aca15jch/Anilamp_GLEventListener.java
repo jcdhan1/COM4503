@@ -101,7 +101,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		while (!valid) {
 			zPosition = 1 - 2 * (float) Math.random();
 			xPosition = 1 + (float) (Math.random() * tabletopDim.x);
-			boolean avoidsPaperweight = !(xPosition<1.5 && zPosition <1.5);
+			boolean avoidsPaperweight = !(xPosition<1.55 && zPosition <1.55);
 			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x-(lampBaseDim.x+1));
 			valid = avoidsPaperweight && avoidsSmartphoneDeskTidy;
 		}
@@ -112,8 +112,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	 * Reset
 	 */
 	public void resetPosition() {
-		xPosition = 1.51f;
-		zPosition = 1.51f;
+		xPosition = 1.55f;
+		zPosition = 1.55f;
 		retransform();
 	}
 
@@ -139,7 +139,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	private TransformNode translateXZ, rotateBicep, rotateForearm, rotateHead;
 	private float a4Length  = 210f,
-				  xPosition = 1.51f, zPosition = 1.51f,
+				  xPosition = 1.55f, zPosition = 1.55f,
 			      rotateBicepAngleStart =  30, rotateBicepAngle		= rotateBicepAngleStart,
 			 	  rotateForearmAngleStart   = -60, rotateForearmAngle   = rotateForearmAngleStart,
 				  rotateHeadAngleStart = 30, rotateHeadAngle = rotateHeadAngleStart;
@@ -163,6 +163,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	private void initialise(GL3 gl) {
 		String user_dir = System.getProperty("user.dir");
 		System.out.println("Working Directory = " + user_dir);
+		if (user_dir.endsWith("src")){
+			user_dir = user_dir.substring(0,user_dir.length()-4);
+		}
 		createRandomNumbers();
 		int[] sky = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\cloud.jpg");
@@ -172,16 +175,12 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\textures\\wallpaper.jpg");
 		int[] wood = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\wood.jpg");
-		int[] textureId1 = TextureLibrary.loadTexture(gl,
-				user_dir + "\\src\\aca15jch\\textures\\jade.jpg");
-		int[] textureId2 = TextureLibrary.loadTexture(gl,
-				user_dir + "\\src\\aca15jch\\textures\\jade_specular.jpg");
 		int[] globe = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\ear0xuu2.jpg");
 		int[] globe_specular = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\ear0xuu2_specular.jpg");
 		int[] metal = TextureLibrary.loadTexture(gl,
-				user_dir + "\\src\\aca15jch\\textures\\surface_specular.jpg");
+				user_dir + "\\src\\aca15jch\\textures\\metal.jpg");
 		int[] smartphone_net = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\smartphone_net.jpg");
 		int[] smartphone_net_specular = TextureLibrary.loadTexture(gl,
@@ -391,9 +390,22 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		NameNode branch4 = new NameNode("Branch 4");
 		m = Mat4Transform.scale(lampHeadDim);
-		TransformNode makeHighestBranch = new TransformNode("scale("+lampHeadDim+")", m);
-		ModelNode cube2Node = new ModelNode("Cube(2)",
+		TransformNode makeBranch4 = new TransformNode("scale("+lampHeadDim+")", m);
+		ModelNode lampHeadNode = new ModelNode("Lamp Head",
 				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal));
+		//Bulb
+		TransformNode attachToHead = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+				Mat4Transform.translate(lampHeadDim.x/2, 0, 0));
+		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
+				user_dir + "\\src\\aca15jch\\fs_solid.glsl");
+		NameNode branch5 = new NameNode("Branch 5");
+		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.x/2,lampHeadDim.x/2);
+		TransformNode makeBranch5 = new TransformNode("scale("+lampHeadDim+")", m);
+		material =  new Material(new Vec3(1, 1, 1),
+				new Vec3(1, 1, 1), new Vec3(1, 1, 1), 10);
+		ModelNode lampBulbNode = new ModelNode("Lamp Bulb",
+				new Model(gl, camera, light, shader, material, new Mat4(1), mesh));
 		lampRoot.addChild(translateXZ);
 			translateXZ.addChild(branch0);
 				branch0.addChild(makeBranch0);
@@ -413,9 +425,12 @@ public class Anilamp_GLEventListener implements GLEventListener {
 										branch3.addChild(attachToForearm);
 											attachToForearm.addChild(rotateHead);
 												rotateHead.addChild(branch4);
-													branch4.addChild(makeHighestBranch);
-														makeHighestBranch.addChild(cube2Node);
-
+													branch4.addChild(makeBranch4);
+														makeBranch4.addChild(lampHeadNode);
+													branch4.addChild(attachToHead);
+														attachToHead.addChild(branch5);
+															branch5.addChild(makeBranch5);
+																makeBranch5.addChild(lampBulbNode);
 		lampRoot.update();
 		resetPosition();
 	}
@@ -508,15 +523,17 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		gl.glFrontFace(gl.GL_CW);
 		skybox.render(gl);
 		gl.glFrontFace(gl.GL_CCW);
-		//updateBranches();
+
+		updateBranches();
 		lampRoot.draw(gl);
 	}
 
 	private void updateBranches() {
 		double elapsedTime = getSeconds() - startTime;
-		rotateBicepAngle = rotateBicepAngleStart * (float) Math.sin(elapsedTime* Math.PI*0.5);
-		rotateForearmAngle = rotateForearmAngleStart * (float) Math.sin(elapsedTime * Math.PI*0.5);
-		rotateHeadAngle = rotateHeadAngleStart * (float) Math.sin(elapsedTime *  Math.PI*0.5);
+		//Prevent bending backwards
+		rotateBicepAngle = rotateBicepAngleStart * (float) Math.abs(Math.sin(elapsedTime* Math.PI*0.5));
+		rotateForearmAngle = rotateForearmAngleStart * (float) Math.abs(Math.sin(elapsedTime* Math.PI*0.5));
+		rotateHeadAngle = rotateHeadAngleStart * (float) Math.abs(Math.sin(elapsedTime* Math.PI*0.5));
 		rotateBicep.setTransform(Mat4Transform.rotateAroundZ(rotateBicepAngle));
 		rotateForearm.setTransform(Mat4Transform.rotateAroundZ(rotateForearmAngle));
 		rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
