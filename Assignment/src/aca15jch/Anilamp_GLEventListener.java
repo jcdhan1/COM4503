@@ -1,36 +1,34 @@
 package aca15jch;
 
-import aca15jch.gmaths.Mat4;
-import aca15jch.gmaths.Mat4Transform;
-import aca15jch.gmaths.Vec3;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLEventListener;
+import aca15jch.gmaths.*;
+import com.jogamp.opengl.*;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Event listener class. Mainly based code on Dr. Maddock's Chapter 7 exercises.
+ * @author aca15jch
+ */
 public class Anilamp_GLEventListener implements GLEventListener {
 
 	private static final boolean DISPLAY_SHADERS = false;
 
+	/**
+	 * Constructor
+	 * @param camera
+	 */
 	public Anilamp_GLEventListener(Camera camera) {
 		this.camera = camera;
 		this.camera.setPosition(new Vec3(3f, 3f, 3f));
 	}
 
-	// ***************************************************
-	/*
-	 * METHODS DEFINED BY GLEventListener
+	/**
+	 *
+	 * @param drawable
 	 */
-
-	/* Initialisation */
 	public void init(GLAutoDrawable drawable) {
 		GL3 gl = drawable.getGL().getGL3();
 		System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
@@ -45,7 +43,14 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		startTime = getSeconds();
 	}
 
-	/* Called to indicate the drawing surface has been moved and/or resized  */
+	/**
+	 * Called to indicate the drawing surface has been moved and/or resized
+	 * @param drawable
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		GL3 gl = drawable.getGL().getGL3();
 		gl.glViewport(x, y, width, height);
@@ -53,13 +58,19 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		camera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
 	}
 
-	/* Draw */
+	/**
+	 *
+	 * @param drawable
+	 */
 	public void display(GLAutoDrawable drawable) {
 		GL3 gl = drawable.getGL().getGL3();
 		render(gl);
 	}
 
-	/* Clean up memory, if necessary */
+	/**
+	 * Clean up memory, if necessary
+	 * @param drawable
+	 */
 	public void dispose(GLAutoDrawable drawable) {
 		GL3 gl = drawable.getGL().getGL3();
 		skybox.dispose(gl);
@@ -82,13 +93,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		light.dispose(gl);
 	}
 
-
-	// ***************************************************
-	/* INTERACTION
-	 *
-	 *
+	/**
+	 * Random jump
 	 */
-
 	public void jump() {
 		boolean valid=false;
 		while (!valid) {
@@ -98,31 +105,30 @@ public class Anilamp_GLEventListener implements GLEventListener {
 			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x-(lampBaseDim.x+1));
 			valid = avoidsPaperweight && avoidsSmartphoneDeskTidy;
 		}
-		updateLoc();
+		retransform();
 	}
 
+	/**
+	 * Reset
+	 */
 	public void resetPosition() {
 		xPosition = 1.51f;
 		zPosition = 1.51f;
-		updateLoc();
+		retransform();
 	}
 
-	private void updateLoc() {
+	/**
+	 * Transformation after each jump
+	 */
+	private void retransform() {
 		double yaw =  Math.atan2(xPosition,zPosition)*180/Math.PI;
 		Mat4 yawMat = Mat4Transform.rotateAroundY((float) yaw - 90);
 		translateXZ.setTransform(Mat4.multiply(Mat4Transform.translate(xPosition, (lampBaseDim.y-tabletopDim.y)/2, zPosition),yawMat));
 		translateXZ.update(); // IMPORTANT – the scene graph has changed
 	}
 
-
-	// ***************************************************
-	/* THE SCENE
-	 * Now define all the methods to handle the scene.
-	 * This will be added to in later examples.
-	 */
-
+	/*FIELDS FOR THE SCENE*/
 	private Camera camera;
-	private Mat4 perspective;
 	private Model skybox, floor, tabletop, paper, paperweight, smartphone;
 	private List<Model> walls	 = new ArrayList<Model>(),
 						legs 	 = new ArrayList<Model>(),
@@ -150,6 +156,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				 //Huawei P10 to scale with A4 paper
 				 smartphoneDim = new Vec3((float) (69.3/a4Length), (float) (7/a4Length), 145.9f/a4Length);
 
+	/**
+	 *
+	 * @param gl
+	 */
 	private void initialise(GL3 gl) {
 		String user_dir = System.getProperty("user.dir");
 		System.out.println("Working Directory = " + user_dir);
@@ -171,9 +181,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		int[] globe_specular = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\ear0xuu2_specular.jpg");
 		int[] metal = TextureLibrary.loadTexture(gl,
-				user_dir + "\\src\\aca15jch\\textures\\metal.jpg");
-		int[] metal_specular = TextureLibrary.loadTexture(gl,
-				user_dir + "\\src\\aca15jch\\textures\\metal_specular.jpg");
+				user_dir + "\\src\\aca15jch\\textures\\surface_specular.jpg");
 		int[] smartphone_net = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\smartphone_net.jpg");
 		int[] smartphone_net_specular = TextureLibrary.loadTexture(gl,
@@ -199,7 +207,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\fs_textured_blinn_phong.glsl");
 		material = new Material(new Vec3(0.81f, 0.81f, 0),
 				new Vec3(0.81f, 0.81f, 0), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-		Mat4 transWallMat = Mat4Transform.translate(0, -(legDim.y+tabletopDim.y),tabletopDim.z);
+		Mat4 transWallMat = Mat4Transform.translate(tabletopDim.x/2, -(legDim.y+tabletopDim.y),tabletopDim.z*3/2);
 		modelMatrix = Mat4.multiply(transWallMat,Mat4Transform.scale(16, 0, 16));
 		this.floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, chequerboard);
 
@@ -272,7 +280,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 								Mat4.multiply(Mat4Transform.translate(tx,0,tz),
 									Mat4.multiply(Mat4Transform.rotateAroundY(90 * i),
 									Mat4Transform.scale(deskTidyPanelDim)))));
-			this.deskTidy.add(new Model(gl, camera, light, shader, material, modelMatrix, mesh, metal, metal_specular));
+			this.deskTidy.add(new Model(gl, camera, light, shader, material, modelMatrix, mesh, metal, metal));
 		}
 		//Base of desk tidy
 		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
@@ -338,7 +346,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 									   Mat4Transform.translate(randomPosition));
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		Model lampBase = new Model(gl, camera, light, shader, material,
-				modelMatrix, mesh, metal, metal_specular);
+				modelMatrix, mesh, metal, metal);
 		NameNode branch0 = new NameNode("Branch 0");
 		TransformNode makeBranch0 = new TransformNode("scale("+lampBaseDim+")", Mat4Transform.scale(lampBaseDim));
 		ModelNode lampBaseNode = new ModelNode("Lamp Base", lampBase);
@@ -385,7 +393,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		m = Mat4Transform.scale(lampHeadDim);
 		TransformNode makeHighestBranch = new TransformNode("scale("+lampHeadDim+")", m);
 		ModelNode cube2Node = new ModelNode("Cube(2)",
-				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular));
+				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal));
 		lampRoot.addChild(translateXZ);
 			translateXZ.addChild(branch0);
 				branch0.addChild(makeBranch0);
@@ -408,12 +416,15 @@ public class Anilamp_GLEventListener implements GLEventListener {
 													branch4.addChild(makeHighestBranch);
 														makeHighestBranch.addChild(cube2Node);
 
-		lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
-		//lampRoot.print(0, false);
-		//System.exit(0);
+		lampRoot.update();
+		resetPosition();
 	}
 
-
+	/**
+	 * Translations to attach legs to table.
+	 * @param n
+	 * @return Translation matrix according to the leg number it is.
+	 */
 	private Mat4 attachLeg(int n) {
 		float x,z;
 		switch (n) {
@@ -437,7 +448,38 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		return Mat4Transform.translate(x,-legDim.y/2,z);
 	}
 
+	/**
+	 * Translations to put up top and bottom wall panels.
+	 * @param top
+	 * @return translation matrix
+	 */
+	private Mat4 vertWallMatrix(boolean top) {
+		float size=16/3f;
+		Mat4 modelMatrix = new Mat4(1);
+		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1f, size), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, (top ? size*5 : size) * 0.5f, -16f * 0.5f), modelMatrix);
+		return modelMatrix;
+	}
 
+	/**
+	 * Translations to put up left and right wall panels.
+	 * @param left
+	 * @return translation matrix
+	 */
+	private Mat4 horizWallMatrix(boolean left) {
+		float size=16/3f;
+		Mat4 modelMatrix = new Mat4(1);
+		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1, 16), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.translate((left ? -1 : 1)*size, 8, -16f * 0.5f), modelMatrix);
+		return modelMatrix;
+	}
+
+	/**
+	 *
+	 * @param gl
+	 */
 	private void render(GL3 gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		Vec3 bulbPos = new Vec3(xPosition+lampHeadDim.x/2,1+lampHeadDim.y,zPosition);
@@ -481,24 +523,6 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		lampRoot.update(); // IMPORTANT – the scene graph has changed
 	}
 
-	private Mat4 vertWallMatrix(boolean top) {
-		float size=16/3f;
-		Mat4 modelMatrix = new Mat4(1);
-		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1f, size), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, (top ? size*5 : size) * 0.5f, -16f * 0.5f), modelMatrix);
-		return modelMatrix;
-	}
-
-	private Mat4 horizWallMatrix(boolean left) {
-		float size=16/3f;
-		Mat4 modelMatrix = new Mat4(1);
-		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1, 16), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.translate((left ? -1 : 1)*size, 8, -16f * 0.5f), modelMatrix);
-		return modelMatrix;
-	}
-
 	// ***************************************************
 	/* TIME
 	 */
@@ -535,12 +559,24 @@ class MyKeyboardInput extends KeyAdapter {
 	public void keyPressed(KeyEvent e) {
 		Camera.Movement m = Camera.Movement.NO_MOVEMENT;
 		switch (e.getKeyCode()) {
-			case KeyEvent.VK_LEFT:  m = Camera.Movement.LEFT;  break;
-			case KeyEvent.VK_RIGHT: m = Camera.Movement.RIGHT; break;
-			case KeyEvent.VK_UP:    m = Camera.Movement.UP;    break;
-			case KeyEvent.VK_DOWN:  m = Camera.Movement.DOWN;  break;
-			case KeyEvent.VK_A:  m = Camera.Movement.FORWARD;  break;
-			case KeyEvent.VK_Z:  m = Camera.Movement.BACK;  break;
+			case KeyEvent.VK_LEFT:
+				m = Camera.Movement.LEFT;
+				break;
+			case KeyEvent.VK_RIGHT:
+				m = Camera.Movement.RIGHT;
+				break;
+			case KeyEvent.VK_UP:
+				m = Camera.Movement.UP;
+				break;
+			case KeyEvent.VK_DOWN:
+				m = Camera.Movement.DOWN;
+				break;
+			case KeyEvent.VK_A:
+				m = Camera.Movement.FORWARD;
+				break;
+			case KeyEvent.VK_Z:
+				m = Camera.Movement.BACK;
+				break;
 		}
 		camera.keyboardInput(m);
 	}
@@ -557,15 +593,15 @@ class MyMouseInput extends MouseMotionAdapter {
 	/**
 	 * mouse is used to control camera position
 	 *
-	 * @param e  instance of MouseEvent
+	 * @param e instance of MouseEvent
 	 */
 	public void mouseDragged(MouseEvent e) {
 		Point ms = e.getPoint();
 		float sensitivity = 0.001f;
-		float dx=(float) (ms.x-lastpoint.x)*sensitivity;
-		float dy=(float) (ms.y-lastpoint.y)*sensitivity;
+		float dx = (float) (ms.x - lastpoint.x) * sensitivity;
+		float dy = (float) (ms.y - lastpoint.y) * sensitivity;
 		//System.out.println("dy,dy: "+dx+","+dy);
-		if (e.getModifiers()==MouseEvent.BUTTON1_MASK)
+		if (e.getModifiers() == MouseEvent.BUTTON1_MASK)
 			camera.updateYawPitch(dx, -dy);
 		lastpoint = ms;
 	}
@@ -573,7 +609,7 @@ class MyMouseInput extends MouseMotionAdapter {
 	/**
 	 * mouse is used to control camera position
 	 *
-	 * @param e  instance of MouseEvent
+	 * @param e instance of MouseEvent
 	 */
 	public void mouseMoved(MouseEvent e) {
 		lastpoint = e.getPoint();

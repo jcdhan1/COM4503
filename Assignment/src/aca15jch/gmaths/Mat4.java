@@ -1,5 +1,7 @@
 package aca15jch.gmaths;
-
+/**
+ * Code reused from gmaths from Chapter 7
+ */
 public class Mat4 {   // row column formulation
 
   public float[][] getValues() {

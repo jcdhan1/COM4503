@@ -1,5 +1,7 @@
 package aca15jch.gmaths;
-
+/**
+ * Code reused from gmaths from Chapter 7
+ */
 public final class Vec3 {
   public float x;
   public float y;

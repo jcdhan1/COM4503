@@ -1,5 +1,7 @@
 package aca15jch;
-
+/**
+ * Code reused from Sphere from Chapter 7
+ */
 public final class Sphere {
 
 	// ***************************************************

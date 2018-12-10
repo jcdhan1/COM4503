@@ -7,6 +7,9 @@ import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
+/**
+ * Code reused from Model from Chapter 7
+ */
 public class Mesh {
 
 	protected float[] vertices;

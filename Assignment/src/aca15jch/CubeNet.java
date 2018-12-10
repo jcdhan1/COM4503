@@ -1,7 +1,7 @@
 package aca15jch;
 
 /**
- * Subclass of Cube where each face is a different. Code resued from
+ * Subclass of Cube where each face is a different. Code resued from chapter 5
  */
 public class CubeNet extends Cube {
 	public static final float[] vertices = new float[]{  // x,y,z, colour, s,t

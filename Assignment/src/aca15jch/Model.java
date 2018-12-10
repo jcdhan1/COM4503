@@ -4,6 +4,9 @@ import aca15jch.gmaths.*;
 
 import com.jogamp.opengl.*;
 
+/**
+ * Code reused from Model from Chapter 7
+ */
 public class Model {
 
 	private Mesh mesh;

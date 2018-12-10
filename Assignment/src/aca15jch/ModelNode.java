@@ -1,7 +1,9 @@
 package aca15jch;
 
 import com.jogamp.opengl.*;
-
+/**
+ * Code reused from ModelNode from Chapter 7
+ */
 public class ModelNode extends SGNode {
 
 	protected Model model;

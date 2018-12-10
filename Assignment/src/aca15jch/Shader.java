@@ -10,6 +10,9 @@ import java.nio.charset.Charset;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.glsl.*;
 
+/**
+ * Code reused from Shader from Chapter 7
+ */
 public class Shader {
 
 	private static final boolean DISPLAY_SHADERS = false;

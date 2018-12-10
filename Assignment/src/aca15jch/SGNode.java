@@ -5,7 +5,9 @@ import aca15jch.gmaths.*;
 import java.util.ArrayList;
 
 import com.jogamp.opengl.*;
-
+/**
+ * Code reused from SGNode from Chapter 7
+ */
 public class SGNode {
 
 	protected String name;

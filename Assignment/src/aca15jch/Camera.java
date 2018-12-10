@@ -5,7 +5,9 @@ import aca15jch.gmaths.*;
 import java.awt.event.*;
 
 import com.jogamp.opengl.awt.GLCanvas;
-
+/**
+ * Code reused from Camera from Chapter 7
+ */
 public class Camera {
 
 	public enum CameraType {X, Z}

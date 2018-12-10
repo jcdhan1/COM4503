@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * Main class to run. Code reused from M01 from Chapter 7 stack of objects
+ */
 public class Anilamp extends JFrame implements ActionListener {
 
 	private static final int WIDTH = 1024;

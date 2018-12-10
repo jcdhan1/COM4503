@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.spi.JPEGImage;
-
+/**
+ * Code reused from TextureLibrary from Chapter 7 stack of objects
+ */
 public final class TextureLibrary {
 
 	// only deals with rgb jpg files

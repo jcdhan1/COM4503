@@ -52,9 +52,9 @@ void main() {
     	ambient = light.ambient * ambient;
     	specular = light.specular * specular;
     } else {
-    	diffuse = vec3(0.375) * diffuse;
-		ambient = vec3(0.375) * ambient;
-		specular = vec3(0.375) * specular;
+    	diffuse = vec3(0.4) * diffuse;
+		ambient = vec3(0.4) * ambient;
+		specular = vec3(0.4) * specular;
     }
 
 	vec3 result = ambient + diffuse + specular;
