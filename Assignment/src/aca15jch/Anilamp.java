@@ -58,6 +58,9 @@ public class Anilamp extends JFrame implements ActionListener {
 		b = new JButton("camera Z");
 		b.addActionListener(this);
 		p.add(b);
+		b = new JButton("Random Pose");
+		b.addActionListener(this);
+		p.add(b);
 		b = new JButton("Jump");
 		b.addActionListener(this);
 		p.add(b);
@@ -85,10 +88,12 @@ public class Anilamp extends JFrame implements ActionListener {
 		} else if (e.getActionCommand().equalsIgnoreCase("camera Z")) {
 			camera.setCamera(Camera.CameraType.Z);
 			canvas.requestFocusInWindow();
+		} else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
+			glEventListener.startAnimation(3*Math.random());
 		} else if (e.getActionCommand().equalsIgnoreCase("Jump")) {
-			glEventListener.jump();
+			glEventListener.startAnimation(false);
 		} else if (e.getActionCommand().equalsIgnoreCase("Reset")) {
-			glEventListener.resetPosition();
+			glEventListener.startAnimation(true);
 		} else if (e.getActionCommand().equalsIgnoreCase("quit"))
 			System.exit(0);
 	}

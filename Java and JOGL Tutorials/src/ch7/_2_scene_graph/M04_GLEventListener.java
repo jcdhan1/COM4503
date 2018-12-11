@@ -303,6 +303,10 @@ public class M04_GLEventListener implements GLEventListener {
 		float rotateAngle = 180f + 90f * (float) Math.sin(elapsedTime);
 		leftArmRotate.setTransform(Mat4Transform.rotateAroundX(-rotateAngle));
 		rightArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
+		if (elapsedTime > 5) {
+			animation=false;
+			startTime = getSeconds() - savedTime;
+		}
 		leftArmRotate.update();
 		rightArmRotate.update();
 	}
