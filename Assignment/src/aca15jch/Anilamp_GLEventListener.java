@@ -234,7 +234,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
 		material = new Material(new Vec3(0.81f, 0.81f, 0),
 				new Vec3(0.81f, 0.81f, 0), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-		Mat4 transWallMat = Mat4Transform.translate(tabletopDim.x/2, -(legDim.y+tabletopDim.y+1.33f),tabletopDim.z*3/2);
+		Mat4 transWallMat = Mat4Transform.translate(
+				tabletopDim.x/2, -(legDim.y+tabletopDim.y+1.33f),tabletopDim.z*3/2);
 		modelMatrix = Mat4.multiply(transWallMat,Mat4Transform.scale(16, 0, 16));
 		this.floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, chequerboard);
 
@@ -365,9 +366,9 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		material = new Material(new Vec3(0.1f, 0.1f, 0.1f),
 				   new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.5f, 0.5f, 0.5f), 30);
 		//Base
-		Vec3 randomPosition = new Vec3(xPosition, (lampBaseDim.y-tabletopDim.y)/2-1.33f, zPosition);
-		translateXZ = new TransformNode("translate(" + xPosition + ",0,0)",
-									   Mat4Transform.translate(randomPosition));
+		Vec3 initPosition = new Vec3(xPosition, (lampBaseDim.y-tabletopDim.y)/2-1.33f, zPosition);
+		translateXZ = new TransformNode("translate(" + initPosition + ")",
+									   Mat4Transform.translate(initPosition));
 		mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
 		Model lampBase = new Model(gl, camera, light, shader, material,
 				modelMatrix, mesh, metal, metal_specular);
@@ -405,10 +406,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		m = Mat4Transform.scale(lampForearmDim);
 		Vec3 transVec2 = new Vec3 (0,lampForearmDim.y/2,0);
 		m = Mat4.multiply(Mat4Transform.translate(transVec2),m);
-		TransformNode makeBranch3 = new TransformNode("scale"+lampForearmDim+";translate"+transVec2, m);
+		TransformNode makeBranch3 = new TransformNode("translate("+transVec2+");scale("+lampForearmDim+")", m);
 		ModelNode lampForearmNode = new ModelNode("Lamp Forearm", lampForearm);
 		//Head
-		TransformNode attachToForearm = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+		TransformNode attachToForearm = new TransformNode("translate(0,"+lampForearmDim.y+",0)",
 				Mat4Transform.translate(0, lampForearmDim.y, 0));
 		rotateHead = new TransformNode("rotateAroundZ(" + rotateHeadAngle + ")",
 				Mat4Transform.rotateAroundZ(rotateHeadAngle));
@@ -419,31 +420,31 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		ModelNode lampHeadNode = new ModelNode("Lamp Head",
 				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular));
 		//Head Decoration
-		TransformNode decorateHeadL = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+		TransformNode decorateHeadL = new TransformNode("translate(0,0,"+(-lampHeadDim.z/2)+")",
 				Mat4Transform.translate(0, 0, -lampHeadDim.z/2));
 		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
 				user_dir + "\\src\\aca15jch\\fs_solid.glsl");
 		material =  new Material(new Vec3(0, 0, 1),
 				new Vec3(0, 0, 1), new Vec3(0, 0, 1), 10);
 		NameNode branch4_5 = new NameNode("Branch 4.5");
-		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.y/2,lampHeadDim.z/2);
-		TransformNode makeBranch4_5 = new TransformNode("scale("+lampHeadDim+")", m);
+		m = Mat4Transform.scale(Vec3.multiply(lampHeadDim,0.5f));
+		TransformNode makeBranch4_5 = new TransformNode("scale("+Vec3.multiply(lampHeadDim,0.5f)+")", m);
 		ModelNode lampLeft = new ModelNode("Lamp Left",
 				new Model(gl, camera, light, shader, material, new Mat4(1),mesh));
-		TransformNode decorateHeadR = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+		TransformNode decorateHeadR = new TransformNode("translate(0,0,"+(lampHeadDim.z/2)+")",
 				Mat4Transform.translate(0, 0,lampHeadDim.z/2));
 		NameNode branch4_75 = new NameNode("Branch 4.75");
-		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.y/2,lampHeadDim.z/2);
-		TransformNode makeBranch4_75 = new TransformNode("scale("+lampHeadDim+")", m);
+		TransformNode makeBranch4_75 = new TransformNode("scale("+Vec3.multiply(lampHeadDim,0.5f)+")", m);
 		ModelNode lampRight = new ModelNode("Lamp Right",
 				new Model(gl, camera, light, shader, material, new Mat4(1),mesh));
 		//Bulb
-		TransformNode attachToHead = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+		TransformNode attachToHead = new TransformNode("translate("+lampHeadDim.x/2+"0,0)",
 				Mat4Transform.translate(lampHeadDim.x/2, 0, 0));
 		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
 		NameNode branch5 = new NameNode("Branch 5");
-		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.x/2,lampHeadDim.x/2);
-		TransformNode makeBranch5 = new TransformNode("scale("+lampHeadDim+")", m);
+		float diameter=lampHeadDim.x/2;
+		m = Mat4Transform.scale(diameter,diameter,diameter);
+		TransformNode makeBranch5 = new TransformNode("scale("+diameter+","+diameter+","+diameter+")", m);
 		material =  new Material(new Vec3(1, 1, 1),
 				new Vec3(1, 1, 1), new Vec3(1, 1, 1), 10);
 		ModelNode lampBulbNode = new ModelNode("Lamp Bulb",
