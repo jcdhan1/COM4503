@@ -9,7 +9,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Event listener class. Mainly based code on Dr. Maddock's Chapter 7 exercises.
+ * Event listener class. Mainly based code on M04_GLEventListener from Chapter 7 scene graph.
+ *
  * @author aca15jch
  */
 public class Anilamp_GLEventListener implements GLEventListener {
@@ -40,7 +41,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		gl.glEnable(GL.GL_CULL_FACE); // default is 'not enabled'
 		gl.glCullFace(GL.GL_BACK);   // default is 'back', assuming CCW
 		initialise(gl);
-		startTime = getSeconds();
+		this.startTime = getSeconds();
 	}
 
 	/**
@@ -73,11 +74,11 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	 */
 	public void dispose(GLAutoDrawable drawable) {
 		GL3 gl = drawable.getGL().getGL3();
-		skybox.dispose(gl);
+		this.skybox.dispose(gl);
 		for (Model wall : this.walls) {
 			wall.dispose(gl);
 		}
-		tabletop.dispose(gl);
+		this.tabletop.dispose(gl);
 		for (Model leg : this.legs) {
 			leg.dispose(gl);
 		}
@@ -87,10 +88,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		for (Model pen : this.pens) {
 			pen.dispose(gl);
 		}
-		paper.dispose(gl);
-		paperweight.dispose(gl);
-		smartphone.dispose(gl);
-		light.dispose(gl);
+		this.paper.dispose(gl);
+		this.paperweight.dispose(gl);
+		this.smartphone.dispose(gl);
+		this.light.dispose(gl);
 	}
 
 
@@ -100,33 +101,34 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	 *
 	 */
 
-	private boolean animation = false, reset=false, posing=false;
-	private double savedTime = 0, limit=2;
+	private boolean animation = false, reset = false, posing = false;
+	private double savedTime = 0, limit = 2;
 
 	public void startAnimation(boolean reset) {
-		animation = true;
-		this.reset= reset;
-		this.posing=false;
-		startTime = getSeconds() - savedTime;
+		this.animation = true;
+		this.reset = reset;
+		this.posing = false;
+		this.startTime = getSeconds() - this.savedTime;
 	}
+
 	public void startAnimation(double limit) {
-		animation = true;
-		this.reset= false;
-		this.posing=true;
-		this.limit=limit;
-		startTime = getSeconds() - savedTime;
+		this.animation = true;
+		this.reset = false;
+		this.posing = true;
+		this.limit = limit;
+		this.startTime = getSeconds() - this.savedTime;
 	}
 
 	/**
 	 * Random jump
 	 */
-	public void jump()  {
-		boolean valid=false;
+	public void jump() {
+		boolean valid = false;
 		while (!valid) {
 			zPosition = 1 - 2 * (float) Math.random();
 			xPosition = 1 + (float) (Math.random() * tabletopDim.x);
-			boolean avoidsPaperweight = !(zPosition < 0)||(xPosition > 2);
-			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x-(lampBaseDim.x+1));
+			boolean avoidsPaperweight = !(zPosition < 0) || (xPosition > 2);
+			boolean avoidsSmartphoneDeskTidy = xPosition < (tabletopDim.x - (lampBaseDim.x + 1));
 			valid = avoidsPaperweight && avoidsSmartphoneDeskTidy;
 		}
 
@@ -139,7 +141,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	public void resetPosition() {
 		xPosition = 1.55f;
 		zPosition = 1.55f;
-		reset=false;
+		reset = false;
 		retransform();
 	}
 
@@ -147,9 +149,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
 	 * Transformation after each jump
 	 */
 	private void retransform() {
-		double yaw =  Math.atan2(xPosition,zPosition)*180/Math.PI;
+		double yaw = Math.atan2(xPosition, zPosition) * 180 / Math.PI;
 		Mat4 yawMat = Mat4Transform.rotateAroundY((float) yaw - 90);
-		translateXZ.setTransform(Mat4.multiply(Mat4Transform.translate(xPosition, (lampBaseDim.y-tabletopDim.y)/2-1.33f, zPosition),yawMat));
+		translateXZ.setTransform(Mat4.multiply(Mat4Transform.translate(xPosition,
+				(lampBaseDim.y - tabletopDim.y) / 2 - 1.33f, zPosition), yawMat));
 		translateXZ.update();
 	}
 
@@ -170,7 +173,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 			 	  rotateForearmAngleStart   = -60, rotateForearmAngle   = rotateForearmAngleStart,
 				  rotateHeadAngleStart = 30, rotateHeadAngle = rotateHeadAngleStart;
 
-
+	/*DIMENSIONS*/
 	private Vec3 lampBaseDim	  = new Vec3(1,0.125f,1),
 				 lampBicepDim	  = new Vec3(lampBaseDim.x/4,(float) (lampBaseDim.x*Math.sqrt(3)/2),lampBaseDim.x/4),
 				 lampElbowDim	  = new Vec3(lampBicepDim.x, lampBicepDim.x, lampBicepDim.x),
@@ -192,7 +195,6 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		if (user_dir.endsWith("src")){
 			user_dir = user_dir.substring(0,user_dir.length()-4);
 		}
-		createRandomNumbers();
 		int[] sky = TextureLibrary.loadTexture(gl,
 				user_dir + "\\src\\aca15jch\\textures\\cloud.jpg");
 		int[] chequerboard = TextureLibrary.loadTexture(gl,
@@ -236,12 +238,15 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		modelMatrix = Mat4.multiply(transWallMat,Mat4Transform.scale(16, 0, 16));
 		this.floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, chequerboard);
 
-		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, vertWallMatrix(false)), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, vertWallMatrix(true)), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, horizWallMatrix(false)), mesh, wallpaper));
-		this.walls.add(new Model(gl, camera, light, shader, material, Mat4.multiply(transWallMat, horizWallMatrix(true)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material,
+				Mat4.multiply(transWallMat, vertWallMatrix(false)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material,
+				Mat4.multiply(transWallMat, vertWallMatrix(true)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material,
+				Mat4.multiply(transWallMat, horizWallMatrix(false)), mesh, wallpaper));
+		this.walls.add(new Model(gl, camera, light, shader, material,
+				Mat4.multiply(transWallMat, horizWallMatrix(true)), mesh, wallpaper));
 
-		float minHeight = 0.5f;
 		//***TABLE***
 		Mat4 tableTransMat = Mat4Transform.translate(new Vec3(tabletopDim.x/2,-(tabletopDim.y+1.33f),0));
 		material = new Material(new Vec3(1, 1, 1),
@@ -264,7 +269,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
 						Mat4.multiply(Mat4Transform.translate(-3f,tabletopDim.y/1.9f,-1f),
 						Mat4Transform.scale(1,1,(float)Math.sqrt(2))));//ISO 216 aspect ratio like A4
 		this.paper = new Model(gl, camera, light, shader, new Material(new Vec3(1, 1, 1),
-				new Vec3(1, 1, 1), new Vec3(0, 0, 0), 1), modelMatrix, mesh, null, null);
+				new Vec3(1, 1, 1), new Vec3(0, 0, 0), 1), modelMatrix, mesh);
 
 		//***PAPERWEIGHT***
 		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
@@ -313,21 +318,21 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				Mat4.multiply(Mat4Transform.translate(deskTidyTransVec.x,tabletopDim.y/1.9f,deskTidyTransVec.z),
 						Mat4Transform.scale(deskTidyPanelDim.x,0,deskTidyPanelDim.y)));
 		this.deskTidy.add(new Model(gl, camera, light, shader, new Material(new Vec3(1, 1, 1),
-				new Vec3(1, 1, 1), new Vec3(0, 0, 0), 0), modelMatrix, mesh, null, null));
+				new Vec3(1, 1, 1), new Vec3(0, 0, 0), 0), modelMatrix, mesh));
 
 		//***PENS***
 		mesh = new Mesh(gl, Cylinder.vertices.clone(), Cylinder.indices.clone());
-		for (int i=0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			Vec3 color;
 			float xtrans;
 			switch (i) {
 				case 1: {
-					color = new Vec3(0,1,0);
+					color = new Vec3(0, 1, 0);
 					xtrans = 0;
 					break;
 				}
 				case 2: {
-					color = new Vec3(0,0,1);
+					color = new Vec3(0, 0, 1);
 					xtrans = deskTidyPanelDim.z;
 					break;
 				}
@@ -349,8 +354,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 				user_dir + "\\src\\aca15jch\\fs_textured_blinn_phong.glsl");
 		mesh = new Mesh(gl, CubeNet.vertices.clone(), CubeNet.indices.clone());
 		modelMatrix = Mat4.multiply(tableTransMat,
-				Mat4.multiply(Mat4Transform.translate(deskTidyTransVec.x,(smartphoneDim.y+tabletopDim.y)/2,-deskTidyTransVec.z),
-						Mat4Transform.scale(smartphoneDim)));
+				Mat4.multiply(Mat4Transform.translate(deskTidyTransVec.x,(smartphoneDim.y+tabletopDim.y)/2,
+						-deskTidyTransVec.z), Mat4Transform.scale(smartphoneDim)));
 		this.smartphone = new Model(gl, camera, light, shader, new Material(new Vec3(0.1f, 0.1f, 0.1f),
 				new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.5f, 0.5f, 0.5f), 0.1f),
 				modelMatrix, mesh, smartphone_net, smartphone_net_specular);
@@ -413,12 +418,29 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		TransformNode makeBranch4 = new TransformNode("scale("+lampHeadDim+")", m);
 		ModelNode lampHeadNode = new ModelNode("Lamp Head",
 				new Model(gl, camera, light, shader, material, new Mat4(1), mesh, metal, metal_specular));
+		//Head Decoration
+		TransformNode decorateHeadL = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+				Mat4Transform.translate(0, 0, -lampHeadDim.z/2));
+		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
+				user_dir + "\\src\\aca15jch\\fs_solid.glsl");
+		material =  new Material(new Vec3(0, 0, 1),
+				new Vec3(0, 0, 1), new Vec3(0, 0, 1), 10);
+		NameNode branch4_5 = new NameNode("Branch 4.5");
+		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.y/2,lampHeadDim.z/2);
+		TransformNode makeBranch4_5 = new TransformNode("scale("+lampHeadDim+")", m);
+		ModelNode lampLeft = new ModelNode("Lamp Left",
+				new Model(gl, camera, light, shader, material, new Mat4(1),mesh));
+		TransformNode decorateHeadR = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
+				Mat4Transform.translate(0, 0,lampHeadDim.z/2));
+		NameNode branch4_75 = new NameNode("Branch 4.75");
+		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.y/2,lampHeadDim.z/2);
+		TransformNode makeBranch4_75 = new TransformNode("scale("+lampHeadDim+")", m);
+		ModelNode lampRight = new ModelNode("Lamp Right",
+				new Model(gl, camera, light, shader, material, new Mat4(1),mesh));
 		//Bulb
 		TransformNode attachToHead = new TransformNode("translate(0,"+lampBaseDim.y+",0)",
 				Mat4Transform.translate(lampHeadDim.x/2, 0, 0));
 		mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
-		shader = new Shader(gl, user_dir + "\\src\\aca15jch\\vs_solid.glsl",
-				user_dir + "\\src\\aca15jch\\fs_solid.glsl");
 		NameNode branch5 = new NameNode("Branch 5");
 		m = Mat4Transform.scale(lampHeadDim.x/2,lampHeadDim.x/2,lampHeadDim.x/2);
 		TransformNode makeBranch5 = new TransformNode("scale("+lampHeadDim+")", m);
@@ -447,6 +469,14 @@ public class Anilamp_GLEventListener implements GLEventListener {
 												rotateHead.addChild(branch4);
 													branch4.addChild(makeBranch4);
 														makeBranch4.addChild(lampHeadNode);
+													branch4.addChild(decorateHeadL);
+														decorateHeadL.addChild(branch4_5);
+															branch4_5.addChild(makeBranch4_5);
+																makeBranch4_5.addChild(lampLeft);
+													branch4.addChild(decorateHeadR);
+														decorateHeadR.addChild(branch4_75);
+															branch4_75.addChild(makeBranch4_75);
+																makeBranch4_75.addChild(lampRight);
 													branch4.addChild(attachToHead);
 														attachToHead.addChild(branch5);
 															branch5.addChild(makeBranch5);
@@ -457,62 +487,64 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
 	/**
 	 * Translations to attach legs to table.
+	 *
 	 * @param n
 	 * @return Translation matrix according to the leg number it is.
 	 */
 	private Mat4 attachLeg(int n) {
-		float x,z;
+		float x, z;
 		switch (n) {
 			case 3:
-				x=3.5f;
-				z=1.5f;
+				x = 3.5f;
+				z = 1.5f;
 				break;
 			case 2:
-				x=-3.5f;
-				z=1.5f;
+				x = -3.5f;
+				z = 1.5f;
 				break;
 			case 1:
-				x=3.5f;
-				z=-1.5f;
+				x = 3.5f;
+				z = -1.5f;
 				break;
 			default:
-				x=-3.5f;
-				z=-1.5f;
+				x = -3.5f;
+				z = -1.5f;
 				break;
 		}
-		return Mat4Transform.translate(x,-legDim.y/2,z);
+		return Mat4Transform.translate(x, -legDim.y / 2, z);
 	}
 
 	/**
 	 * Translations to put up top and bottom wall panels.
+	 *
 	 * @param top
 	 * @return translation matrix
 	 */
 	private Mat4 vertWallMatrix(boolean top) {
-		float size=16/3f;
+		float size = 16 / 3f;
 		Mat4 modelMatrix = new Mat4(1);
 		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1f, size), modelMatrix);
 		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, (top ? size*5 : size) * 0.5f, -16f * 0.5f), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.translate(0, (top ? size * 5 : size) * 0.5f, -16f * 0.5f), modelMatrix);
 		return modelMatrix;
 	}
 
 	/**
 	 * Translations to put up left and right wall panels.
+	 *
 	 * @param left
 	 * @return translation matrix
 	 */
 	private Mat4 horizWallMatrix(boolean left) {
-		float size=16/3f;
+		float size = 16 / 3f;
 		Mat4 modelMatrix = new Mat4(1);
 		modelMatrix = Mat4.multiply(Mat4Transform.scale(size, 1, 16), modelMatrix);
 		modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundX(90), modelMatrix);
-		modelMatrix = Mat4.multiply(Mat4Transform.translate((left ? -1 : 1)*size, 8, -16f * 0.5f), modelMatrix);
+		modelMatrix = Mat4.multiply(Mat4Transform.translate((left ? -1 : 1) * size, 8, -16f * 0.5f), modelMatrix);
 		return modelMatrix;
 	}
 
 	/**
-	 *
 	 * @param gl
 	 */
 	private void render(GL3 gl) {
@@ -540,23 +572,24 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		gl.glFrontFace(gl.GL_CW);
 		skybox.render(gl);
 		gl.glFrontFace(gl.GL_CCW);
-		if (animation){
+		if (animation) {
 			jumping();
 		}
 		lampRoot.draw(gl);
 	}
+
 	private void jumping() {
-		double elapsedTime = getSeconds() - startTime, period=2,
-		multiplicand = Math.abs(Math.cos(elapsedTime* Math.PI/period));
+		double elapsedTime = getSeconds() - startTime, period = 2,
+				multiplicand = Math.abs(Math.cos(elapsedTime * Math.PI / period));
 		rotateBicepAngle = rotateBicepAngleStart * (float) multiplicand;
 		rotateForearmAngle = rotateForearmAngleStart * (float) multiplicand;
 		rotateHeadAngle = rotateHeadAngleStart * (float) multiplicand;
-		light.setDirection(xPosition,(float) Math.sin(elapsedTime* Math.PI/period)/12,zPosition);
+		light.setDirection(xPosition, (float) Math.sin(elapsedTime * Math.PI / period) / 12, zPosition);
 		rotateBicep.setTransform(Mat4Transform.rotateAroundZ(rotateBicepAngle));
 		rotateForearm.setTransform(Mat4Transform.rotateAroundZ(rotateForearmAngle));
 		rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
-		if (elapsedTime > this.limit) {
-			animation=false;
+		if (elapsedTime > (posing ? this.limit : period)) {
+			animation = false;
 			startTime = getSeconds() - savedTime;
 			if (!posing) {
 				if (reset) {
@@ -569,30 +602,11 @@ public class Anilamp_GLEventListener implements GLEventListener {
 		lampRoot.update();
 	}
 
-	// ***************************************************
-	/* TIME
-	 */
-
 	private double startTime;
 
 	private double getSeconds() {
 		return System.currentTimeMillis() / 1000.0;
 	}
-
-	// ***************************************************
-	/* An array of random numbers
-	 */
-
-	private int NUM_RANDOMS = 1000;
-	private float[] randoms;
-
-	private void createRandomNumbers() {
-		randoms = new float[NUM_RANDOMS];
-		for (int i = 0; i < NUM_RANDOMS; ++i) {
-			randoms[i] = (float) Math.random();
-		}
-	}
-
 }
 
 class MyKeyboardInput extends KeyAdapter {

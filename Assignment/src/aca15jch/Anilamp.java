@@ -13,7 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * Main class to run. Code reused from M01 from Chapter 7 stack of objects
+ * Main class to run. Code reused from M04 from Chapter 7 scene graph.
  */
 public class Anilamp extends JFrame implements ActionListener {
 
@@ -89,7 +89,7 @@ public class Anilamp extends JFrame implements ActionListener {
 			camera.setCamera(Camera.CameraType.Z);
 			canvas.requestFocusInWindow();
 		} else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
-			glEventListener.startAnimation(3*Math.random());
+			glEventListener.startAnimation(3 * Math.random());
 		} else if (e.getActionCommand().equalsIgnoreCase("Jump")) {
 			glEventListener.startAnimation(false);
 		} else if (e.getActionCommand().equalsIgnoreCase("Reset")) {
@@ -97,5 +97,4 @@ public class Anilamp extends JFrame implements ActionListener {
 		} else if (e.getActionCommand().equalsIgnoreCase("quit"))
 			System.exit(0);
 	}
-
 }
